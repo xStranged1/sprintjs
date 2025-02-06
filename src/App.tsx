@@ -12,7 +12,7 @@ function App() {
 
   const calculatePace = () => {
 
-    const totalSeconds = (time?.getMinutes() * 60 + time?.getSeconds())
+    const totalSeconds = (time?.getHours() * 60 * 60 + time?.getMinutes() * 60 + time?.getSeconds())
     const timePerKm = totalSeconds / distance
     const minutes = timePerKm / 60
 
