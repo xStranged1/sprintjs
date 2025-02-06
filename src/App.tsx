@@ -7,15 +7,16 @@ import { Input } from './components/ui/input'
 function App() {
 
   const [time, setTime] = useState<Date | undefined>(undefined)
-  const [distance, setDistance] = useState(0)
+  const [distance, setDistance] = useState('')
   const [pace, setPace] = useState('')
 
   const calculatePace = () => {
+    const distanceFloat = parseFloat(distance)
     const hours = time?.getHours()
     const minutes = time?.getMinutes()
     const seconds = time?.getSeconds()
     const totalSeconds = (hours ?? 0) * 60 * 60 + (minutes ?? 0) * 60 + (seconds ?? 0)
-    const timePerKm = totalSeconds / distance
+    const timePerKm = totalSeconds / distanceFloat
     const minutesPerKm = timePerKm / 60
 
     const decimal = minutesPerKm % 1
@@ -32,7 +33,7 @@ function App() {
       </div>
       <div className='my-2'>
         <h2>Distancia total (km)</h2>
-        <Input type='number' value={distance} onChange={(e) => setDistance(Number(e.target.value))} />
+        <Input type='text' value={distance} onChange={(e) => setDistance(e.target.value)} />
       </div>
       <Button variant='outline' className='mt-3' onClick={calculatePace}>Calcular ritmo</Button>
 
