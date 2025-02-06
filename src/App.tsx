@@ -7,18 +7,20 @@ import { Input } from './components/ui/input'
 function App() {
 
   const [time, setTime] = useState<Date | undefined>(undefined)
-  const [distance, setDistance] = useState('')
+  const [distance, setDistance] = useState(0)
   const [pace, setPace] = useState('')
 
   const calculatePace = () => {
-
-    const totalSeconds = (time?.getHours() * 60 * 60 + time?.getMinutes() * 60 + time?.getSeconds())
+    const hours = time?.getHours()
+    const minutes = time?.getMinutes()
+    const seconds = time?.getSeconds()
+    const totalSeconds = (hours ?? 0) * 60 * 60 + (minutes ?? 0) * 60 + (seconds ?? 0)
     const timePerKm = totalSeconds / distance
-    const minutes = timePerKm / 60
+    const minutesPerKm = timePerKm / 60
 
-    const decimal = minutes % 1
-    const seconds = (decimal * 100) * 60 / 100
-    setPace(`${Math.floor(minutes)}:${Math.round(seconds)}m / KM`)
+    const decimal = minutesPerKm % 1
+    const secondsPerKm = (decimal * 100) * 60 / 100
+    setPace(`${Math.floor(minutesPerKm)}:${Math.round(secondsPerKm)}m / KM`)
   }
 
   return (
@@ -30,7 +32,7 @@ function App() {
       </div>
       <div className='my-2'>
         <h2>Distancia total (km)</h2>
-        <Input type='text' value={distance} onChange={(e) => setDistance(e.target.value)} />
+        <Input type='number' value={distance} onChange={(e) => setDistance(Number(e.target.value))} />
       </div>
       <Button variant='outline' className='mt-3' onClick={calculatePace}>Calcular ritmo</Button>
 
