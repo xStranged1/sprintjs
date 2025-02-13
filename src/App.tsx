@@ -3,13 +3,14 @@ import { Route, Switch } from "wouter";
 import { HomeScreen } from './screens/HomeScreen'
 import { StatsScreen } from './screens/StatsScreen';
 import { Navbar } from './core/Navbar';
+import { Toaster } from './components/ui/toaster';
 
 function App() {
 
   return (
     <>
       <Navbar />
-
+      <Toaster />
       <Route path="/about">About Us</Route>
       {/* 
       Routes below are matched exclusively -
