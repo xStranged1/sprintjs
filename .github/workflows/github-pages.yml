@@ -28,8 +28,8 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     env: 
-      API_URL: ${{ secrets.VITE_API_URL }}
-      API_URL: ${{ secrets.VITE_API_PORT }}
+      VITE_API_URL: ${{ secrets.VITE_API_URL }}
+      VITE_API_PORT: ${{ secrets.VITE_API_PORT }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
