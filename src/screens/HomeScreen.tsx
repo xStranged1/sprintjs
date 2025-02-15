@@ -1,12 +1,14 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import '../App.css'
 import { TimePickerDemo } from '@/components/ui/time-picker-demo'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { getPace, getTotalSeconds } from '@/utils/utils'
-import { createSprint } from '@/services/sprintService'
+import { createSprint, getAllSprints } from '@/services/sprintService'
 import { useToast } from '@/hooks/use-toast'
 import { DateTimePicker } from '@/components/ui/dateTimePicker'
+import { Sprint } from '@/types/Sprint'
+import { CardSprint } from '@/core/CardSprint'
 
 export const HomeScreen = () => {
 
@@ -14,7 +16,22 @@ export const HomeScreen = () => {
     const [datetime, setDatetime] = useState<Date>(new Date())
     const [distance, setDistance] = useState('')
     const [pace, setPace] = useState('')
+    const [sprints, setSprints] = useState<Sprint[]>([])
+    const [loading, setLoading] = useState(false)
+
     const { toast } = useToast()
+    const user = { name: 'Fede' }
+
+    useEffect(() => {
+        const fetchSprints = async () => {
+            setLoading(true)
+            const res = await getAllSprints()
+            setLoading(false)
+            if (!res) return toast({ title: 'Hubo un error recuperando los sprints', variant: 'destructive' })
+            setSprints(res)
+        }
+        fetchSprints()
+    }, [])
 
     const handleSubmit = async () => {
         const hours = time?.getHours()
@@ -41,9 +58,14 @@ export const HomeScreen = () => {
 
     return (
         <div>
-            <h1>SprintJS</h1>
 
-            <div className='my-2'>
+            {sprints.length > 0 && (
+                sprints.map((sprint) => (
+                    <CardSprint sprint={sprint} key={sprint.id} />
+                ))
+            )}
+
+            {/* <div className='my-2'>
                 <DateTimePicker datetime={datetime} setDatetime={(e) => setDatetime(e)} />
             </div>
             <div className='my-2'>
@@ -60,7 +82,7 @@ export const HomeScreen = () => {
 
             <div className='my-2'>
                 <Button color="black" className='mt-3' onClick={handleSubmit}>Guardar Sprint</Button>
-            </div>
+            </div> */}
 
         </div>
     )

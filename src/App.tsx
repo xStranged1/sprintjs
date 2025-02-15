@@ -8,7 +8,8 @@ import { Toaster } from './components/ui/toaster';
 function App() {
 
   return (
-    <>
+    <div className='justify-center items-center px-12'>
+      <div className='mt-2' />
       <Navbar />
       <Toaster />
       <Route path="/about">About Us</Route>
@@ -26,7 +27,7 @@ function App() {
         {/* Default route in a switch */}
         <Route>404: No such page!</Route>
       </Switch>
-    </>
+    </div>
   )
 }
 
