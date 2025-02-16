@@ -9,7 +9,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
-import { TimePickerDemo } from "./time-picker-demo";
+import { TimePicker } from "./TimePicker";
 import { useState } from "react";
 
 export function DateTimePicker({ datetime, setDatetime }: { datetime: Date, setDatetime: (datetime: Date) => void }) {
@@ -55,7 +55,7 @@ export function DateTimePicker({ datetime, setDatetime }: { datetime: Date, setD
                     initialFocus
                 />
                 <div className="p-3 border-t border-border">
-                    <TimePickerDemo setDate={(date) => {
+                    <TimePicker setDate={(date) => {
                         if (date) {
                             setDate(date)
                             setDatetime(date)

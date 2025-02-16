@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react-swc'
 import { defineConfig } from "vite"
 
 export default defineConfig({
-  base: "/sprintjs",
+  base: "/",
   plugins: [react()],
   resolve: {
     alias: {

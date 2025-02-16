@@ -4,6 +4,7 @@ import { HomeScreen } from './screens/HomeScreen'
 import { StatsScreen } from './screens/StatsScreen';
 import { Navbar } from './core/Navbar';
 import { Toaster } from './components/ui/toaster';
+import { PaceScreen } from './screens/PaceScreen';
 
 function App() {
 
@@ -18,8 +19,9 @@ function App() {
       the first matched route gets rendered
     */}
       <Switch>
-        <Route path="/sprintjs" component={HomeScreen} />
+        <Route path="/" component={HomeScreen} />
         <Route path="/stats" component={StatsScreen} />
+        <Route path="/calculate-pace" component={PaceScreen} />
         <Route path="/users/:name">
           {(params) => <>Hello, {params.name}!</>}
         </Route>

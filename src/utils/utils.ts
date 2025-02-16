@@ -4,7 +4,7 @@ export const getTotalSeconds = (hours: number | undefined, minutes: number | und
 
 export const getPace = (distance: number, hours: number | undefined, minutes: number | undefined, seconds: number | undefined) => {
     const totalSeconds = getTotalSeconds(hours, minutes, seconds)
-    const timePerKm = totalSeconds / distance
+    const timePerKm = totalSeconds / (distance / 1000)
     const minutesPerKm = timePerKm / 60
     const decimal = minutesPerKm % 1
     const secondsPerKm = Math.round((decimal * 100) * 60 / 100).toString()
