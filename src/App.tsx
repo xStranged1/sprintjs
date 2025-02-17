@@ -5,6 +5,7 @@ import { StatsScreen } from './screens/StatsScreen';
 import { Navbar } from './core/Navbar';
 import { Toaster } from './components/ui/toaster';
 import { PaceScreen } from './screens/PaceScreen';
+import { Footer } from './core/Footer';
 
 function App() {
 
@@ -19,7 +20,7 @@ function App() {
       the first matched route gets rendered
     */}
       <Switch>
-        <Route path="/" component={HomeScreen} />
+        <Route path="/sprintjs" component={HomeScreen} />
         <Route path="/stats" component={StatsScreen} />
         <Route path="/calculate-pace" component={PaceScreen} />
         <Route path="/users/:name">
@@ -29,6 +30,7 @@ function App() {
         {/* Default route in a switch */}
         <Route>404: No such page!</Route>
       </Switch>
+      <Footer />
     </div>
   )
 }

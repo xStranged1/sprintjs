@@ -67,7 +67,7 @@ export const CreateSprint = () => {
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                     <Label htmlFor="name" className="text-right">
-                        Tiempo total (s)
+                        Tiempo total
                     </Label>
                     <TimePicker date={time} setDate={(e) => setTime(e)} />
                 </div>
@@ -81,7 +81,7 @@ export const CreateSprint = () => {
                     <Checkbox id="takeBreak" onCheckedChange={() => setTakeBreak(prev => !prev)} checked={takeBreak}
                         className="justify-self-end"
                     />
-                    <Label htmlFor="takeBreak" className="text-left col-span-3">
+                    <Label htmlFor="takeBreak" className="text-left col-span-3 cursor-pointer ml-1">
                         Tomó descansos?
                     </Label>
                 </div>
