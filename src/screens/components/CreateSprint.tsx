@@ -7,10 +7,16 @@ import { Label } from "@/components/ui/label"
 import { TimePicker } from "@/components/ui/TimePicker"
 import { useToast } from "@/hooks/use-toast"
 import { createSprint } from "@/services/sprintService"
+import { Sprint } from "@/types/Sprint"
 import { getPace, getTotalSeconds } from "@/utils/utils"
 import { useEffect, useState } from "react"
 
-export const CreateSprint = () => {
+interface PropsCreateSprint {
+    closeDialog: (booelan: boolean) => void,
+    onSubmit: (newSprint: Sprint) => void
+}
+
+export const CreateSprint = ({ closeDialog, onSubmit }: PropsCreateSprint) => {
 
     const [time, setTime] = useState<Date | undefined>(undefined)
     const [datetime, setDatetime] = useState<Date>(new Date())
@@ -25,13 +31,15 @@ export const CreateSprint = () => {
         const seconds = time?.getSeconds()
         const sprint = {
             date: datetime,
-            distance: Number(distance) * 1000,
+            distance: Number(distance),
             time: getTotalSeconds(hours, minutes, seconds),
             takeBreak
         }
         const res = await createSprint(sprint)
-        if (!res) toast({ title: 'Hubo un error creando el sprint', variant: 'destructive' })
+        if (!res.success) return toast({ title: 'Hubo un error creando el sprint', description: res.message, variant: 'destructive' })
         toast({ title: 'Sprint creado con exito!' })
+        closeDialog(false)
+        onSubmit(res.data)
     }
 
     useEffect(() => {
@@ -51,7 +59,7 @@ export const CreateSprint = () => {
     }, [distance, time])
 
     return (
-        <DialogContent className="sm:max-w-[425px] mt-[-28px] ">
+        <DialogContent className="sm:max-w-[425px] mt-[-28px]">
             <DialogHeader>
                 <DialogTitle>Crear Sprint</DialogTitle>
                 <DialogDescription>

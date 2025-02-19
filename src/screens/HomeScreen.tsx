@@ -12,16 +12,21 @@ export const HomeScreen = () => {
 
     const [sprints, setSprints] = useState<Sprint[]>([])
     const [loading, setLoading] = useState(false)
+    const [open, setOpen] = useState(false)
 
     const { toast } = useToast()
+
+    const addSprint = (newSprint: Sprint) => {
+        setSprints((prevSprints) => [...prevSprints, newSprint])
+    }
 
     useEffect(() => {
         const fetchSprints = async () => {
             setLoading(true)
             const res = await getAllSprints()
             setLoading(false)
-            if (!res) return toast({ title: 'Hubo un error recuperando los sprints', variant: 'destructive' })
-            setSprints(res)
+            if (!res.success) return toast({ title: 'Hubo un error recuperando los sprints', description: res.message, variant: 'destructive' })
+            setSprints(res.data)
         }
         fetchSprints()
     }, [])
@@ -29,11 +34,11 @@ export const HomeScreen = () => {
     return (
         <div>
             <div className='justify-self-end'>
-                <Dialog>
+                <Dialog open={open} onOpenChange={setOpen}>
                     <DialogTrigger asChild>
                         <Button className='bg-primary'>Crear nuevo Sprint</Button>
                     </DialogTrigger>
-                    <CreateSprint />
+                    <CreateSprint closeDialog={setOpen} onSubmit={addSprint} />
                 </Dialog>
             </div>
             {loading && (<h2>Loading...</h2>)}
