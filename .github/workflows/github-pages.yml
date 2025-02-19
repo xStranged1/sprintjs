@@ -30,6 +30,7 @@ jobs:
     env: 
       VITE_API_URL: ${{ secrets.VITE_API_URL }}
       VITE_API_PORT: ${{ secrets.VITE_API_PORT }}
+      VITE_ENVIRONMENT: ${{ secrets.VITE_ENVIRONMENT }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
