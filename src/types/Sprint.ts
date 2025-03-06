@@ -9,4 +9,7 @@ export interface Sprint extends BaseSprint {
     createDate: string;  // createDate as string (ISO format)
     updateDate: string;  // updateDate as string (ISO format)
     pace: number;
+    circuit: any
 }
+
+export type OrderedBy = 'date' | 'time' | 'pace' | 'circuit'
