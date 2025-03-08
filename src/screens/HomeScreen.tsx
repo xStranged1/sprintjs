@@ -7,7 +7,7 @@ import { OrderedBy, Sprint } from '@/types/Sprint'
 import { CardSprint } from '@/core/CardSprint'
 import { Dialog, DialogTrigger } from '@/components/ui/dialog'
 import { CreateSprint } from './components/CreateSprint'
-import { ArrowUp } from 'lucide-react'
+import { FilterBar } from './components/FilterBar'
 
 export const HomeScreen = () => {
 
@@ -30,6 +30,8 @@ export const HomeScreen = () => {
             setLoading(false)
             if (!res.success) return toast({ title: 'Hubo un error recuperando los sprints', description: res.message, variant: 'destructive' })
             const sprints = res.data
+            console.log(sprints);
+
             const orderedSprints = orderByDate(sprints)
             setSprints(orderedSprints)
         }
@@ -68,21 +70,7 @@ export const HomeScreen = () => {
     return (
         <div>
             <div className='flex justify-between gap-5 items-center'>
-                <div className='flex items-center gap-4'>
-                    <h3>Ordenar por: </h3>
-                    <Button variant='ghost' onClick={() => setIsOrderedAscending(prev => !prev)}>
-                        Fecha
-                        <ArrowUp className={`transform transition-transform duration-300 ${isOrderedAscending ? "rotate-0" : "rotate-180"}`} />
-                    </Button>
-                    <Button variant='ghost' onClick={() => {
-                        setIsOrderedAscending(prev => !prev)
-                        setOrderedBy('time')
-                    }}>
-                        Tiempo
-                        <ArrowUp className={`transform transition-transform duration-300 ${isOrderedAscending ? "rotate-0" : "rotate-180"}`} />
-                    </Button>
-
-                </div>
+                <FilterBar orderedBy={orderedBy} setOrderedBy={setOrderedBy} isOrderedAscending={isOrderedAscending} setIsOrderedAscending={setIsOrderedAscending} />
                 <Dialog open={open} onOpenChange={setOpen}>
                     <DialogTrigger asChild>
                         <Button className='bg-primary'>Crear nuevo Sprint</Button>

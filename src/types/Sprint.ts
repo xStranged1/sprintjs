@@ -1,15 +1,25 @@
 export interface BaseSprint {
-    distance: number; // distance in meters
-    time: number;     // time in seconds
-    date: Date;
+    distance: number, // distance in meters
+    time: number,  // time in seconds
+    date: Date,
+    circuit?: any,
+    numberOfLaps?: number,
+    temperature?: number,
+    comment?: string,
+    takeBreak: boolean,
+    effort?: number
 }
 
 export interface Sprint extends BaseSprint {
-    id: number;
-    createDate: string;  // createDate as string (ISO format)
-    updateDate: string;  // updateDate as string (ISO format)
-    pace: number;
-    circuit: any
+    id: number,
+    createDate: string,
+    updateDate: string,
+    pace: number,
+}
+
+export interface Circuit {
+    name: string,
+    distance: number
 }
 
 export type OrderedBy = 'date' | 'time' | 'pace' | 'circuit'

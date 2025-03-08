@@ -1,3 +1,33 @@
-body {
- 
-}
+.scrollable-content {
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 10px;
+  }
+
+  .scrollable-content::-webkit-scrollbar {
+    width: 8px;
+    background-color: #f1f1f1;
+  }
+  
+  /* Estilo para el "thumb" (el control de la barra de desplazamiento) */
+  .scrollable-content::-webkit-scrollbar-thumb {
+    background-color: #888; /* Color del thumb */
+    border-radius: 10px;     /* Bordes redondeados */
+    border: 2px solid #f1f1f1; /* Border alrededor del thumb */
+  }
+  
+  /* Estilo cuando el usuario pasa el ratón sobre el thumb */
+  .scrollable-content::-webkit-scrollbar-thumb:hover {
+    background-color: #555; /* Color más oscuro cuando el ratón está sobre el thumb */
+  }
+  
+  /* Estilo para la pista (fondo de la barra de desplazamiento) */
+  .scrollable-content::-webkit-scrollbar-track {
+    background: #f1f1f1; /* Fondo de la pista */
+    border-radius: 10px;  /* Bordes redondeados de la pista */
+  }
+  
+  /* Firefox (también puedes usar Webkit para navegadores basados en Chromium) */
+  .scrollable-content {
+    scrollbar-width: thin;  /* Controla el grosor de la barra de desplazamiento en Firefox */
+  }
