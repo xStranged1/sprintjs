@@ -2,7 +2,7 @@ export interface BaseSprint {
     distance: number, // distance in meters
     time: number,  // time in seconds
     date: Date,
-    circuit?: any,
+    circuit?: Circuit,
     numberOfLaps?: number,
     temperature?: number,
     comment?: string,

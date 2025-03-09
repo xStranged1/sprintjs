@@ -1,9 +1,11 @@
 import { DialogHeader } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectSeparator, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { getAllCircuits } from "@/services/circuitService"
 import { Circuit } from "@/types/Sprint"
 import { Label } from "@radix-ui/react-label"
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useState } from "react"
+import { CreateCircuit } from "./CreateCircuit"
 
 interface Params {
     onInputDistance: (value: string) => void,
@@ -16,21 +18,17 @@ export const DistanceFields = ({ onSelectCircuit, onInputDistance, onInputLaps }
     const [distance, setDistance] = useState('')
     const [selectedCircuit, setSelectedCircuit] = useState<Circuit | undefined>()
     const [laps, setLaps] = useState('')
+    const [circuits, setCircuits] = useState<Circuit[]>([])
 
-    const circuits = useMemo(() => {
-        // fetch circuits
-        const dummyCircuits: Circuit[] = [
-            {
-                name: 'Plaza Azcuenaga',
-                distance: 548.24
-            },
-            {
-                name: 'Parque San Martín',
-                distance: 1458.245
-
+    useEffect(() => {
+        const fetchCircuits = async () => {
+            const res = await getAllCircuits()
+            console.log(res);
+            if (res.success) {
+                setCircuits(res.data)
             }
-        ]
-        return dummyCircuits
+        }
+        fetchCircuits()
     }, [])
 
     useEffect(() => {
@@ -54,6 +52,8 @@ export const DistanceFields = ({ onSelectCircuit, onInputDistance, onInputLaps }
                 <Label htmlFor="name" className="text-right">
                     Circuito
                 </Label>
+
+
                 <Select onValueChange={(value) => handleOnSelectCircuit(JSON.parse(value))}>
                     <SelectTrigger className="w-[180px]">
                         <SelectValue placeholder="Selecciona un circuito" />
@@ -62,10 +62,12 @@ export const DistanceFields = ({ onSelectCircuit, onInputDistance, onInputLaps }
                         {circuits.map((circuit) => (
                             <SelectItem key={circuit.name} value={JSON.stringify(circuit)}>{circuit.name}</SelectItem>
                         ))}
-                        <SelectItem key='new' value='Agregar un circuito'>Agregar un circuito</SelectItem>
+                        <SelectSeparator />
+                        <CreateCircuit />
                     </SelectContent>
                 </Select>
-            </DialogHeader>
+
+            </DialogHeader >
             <DialogHeader className="grid grid-cols-4 items-center mr-5 gap-4">
                 <Label htmlFor="name" className="text-right">
                     Vueltas

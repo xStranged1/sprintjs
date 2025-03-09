@@ -11,7 +11,7 @@ export const CardSprint = ({ sprint }: { sprint: Sprint }) => {
     const textPace = formatTime(sprint.pace)
     return (
         <div className="my-4">
-            <Card className="w-[450px]">
+            <Card className="min-w-[450px] w-fit">
                 <CardHeader>
                     <CardTitle>Distancia: {sprint.distance}m</CardTitle>
                     <CardDescription>{textDate}</CardDescription>
@@ -27,7 +27,7 @@ export const CardSprint = ({ sprint }: { sprint: Sprint }) => {
                     </div>
                     <div className="flex flex-row items-center gap-2">
                         <Map />
-                        <p>Circuito: </p><strong>{sprint.circuit ?? '?'}</strong>
+                        <p>Circuito: </p><strong>{sprint.circuit?.name ?? '?'}</strong>
                     </div>
                 </CardContent>
             </Card>
