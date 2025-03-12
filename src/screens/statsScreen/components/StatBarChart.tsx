@@ -1,14 +1,14 @@
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import '../App.css'
-import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
+import '@/App.css'
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useEffect, useMemo, useState } from 'react';
-import { getAllSprints, orderByDate } from '@/services/sprintService';
+import { completeDates, getAllSprints } from '@/services/sprintService';
 import { toast } from '@/hooks/use-toast';
 import { Sprint } from '@/types/Sprint';
 import { format } from "date-fns";
-
-export const description = "An interactive bar chart";
+import { formatTime } from '@/utils/utils';
+import { Ruler, Timer } from 'lucide-react';
 
 const chartConfig = {
     views: {
@@ -20,11 +20,11 @@ const chartConfig = {
     },
     times: {
         label: "Tiempo total",
-        color: "hsl(var(--chart-2))",
+        color: "hsl(var(--chart-3))",
     },
 } satisfies ChartConfig;
 
-export const StatsScreen = () => {
+export const StatBarChart = () => {
     const [activeChart, setActiveChart] = useState<keyof typeof chartConfig>("kilometers");
     const [loading, setLoading] = useState(true)
     const [sprints, setSprints] = useState<Sprint[]>([])
@@ -35,11 +35,8 @@ export const StatsScreen = () => {
             const res = await getAllSprints()
             setLoading(false)
             if (!res.success) return toast({ title: 'Hubo un error recuperando los sprints', description: res.message, variant: 'destructive' })
-            const sprints = res.data
-            console.log(sprints);
-
-            const orderedSprints = orderByDate(sprints)
-            setSprints(orderedSprints)
+            const sprints = res.data.reverse()
+            setSprints(sprints)
         }
         fetchSprints()
     }, [])
@@ -47,8 +44,11 @@ export const StatsScreen = () => {
     const total = useMemo(() => {
         if (sprints.length > 0) {
             console.log('setea total');
+            const completedSprints = completeDates(sprints)
+            console.log("completedSprints");
+            console.log(completedSprints);
 
-            const chartSprint = sprints.map((sprint) => {
+            const chartSprint = completedSprints.map((sprint) => {
                 return {
                     date: format(sprint.date, 'yyyy-MM-dd'),
                     kilometers: sprint.distance,
@@ -69,7 +69,7 @@ export const StatsScreen = () => {
         <Card>
             <CardHeader className="flex flex-col items-stretch space-y-0 border-b p-0 sm:flex-row">
                 <div className="flex flex-1 flex-col justify-center gap-1 px-6 py-5 sm:py-6">
-                    <CardTitle>Grafico de barra</CardTitle>
+                    <CardTitle>Overall</CardTitle>
                     <CardDescription>
                         Mostrando kilometros y tiempo acumulado anual
                     </CardDescription>
@@ -111,6 +111,7 @@ export const StatsScreen = () => {
                             }}
                         >
                             <CartesianGrid vertical={false} />
+                            <YAxis />
                             <XAxis
                                 dataKey="date"
                                 tickLine={false}
@@ -136,6 +137,14 @@ export const StatsScreen = () => {
                                                 day: "numeric",
                                                 year: "numeric",
                                             });
+                                        }}
+                                        formatter={(value: any) => {
+                                            if (activeChart === "kilometers") {
+                                                return <div className="flex flex-row items-center justify-between gap-2"><Ruler size={18} /><p>Distancia: {value}m</p></div>
+                                            }
+                                            if (activeChart === "times") {
+                                                return <div className="flex flex-row items-center justify-between gap-2"><Timer size={18} /><p>Tiempo: {formatTime(value)}</p></div>
+                                            }
                                         }}
                                     />
                                 }

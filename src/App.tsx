@@ -1,7 +1,7 @@
 import './App.css'
 import { Route, Switch } from "wouter";
 import { HomeScreen } from './screens/HomeScreen'
-import { StatsScreen } from './screens/StatsScreen';
+import { StatsScreen } from './screens/statsScreen/StatsScreen';
 import { Navbar } from './core/Navbar';
 import { Toaster } from './components/ui/toaster';
 import { PaceScreen } from './screens/PaceScreen';

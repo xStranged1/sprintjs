@@ -30,10 +30,8 @@ export const HomeScreen = () => {
             setLoading(false)
             if (!res.success) return toast({ title: 'Hubo un error recuperando los sprints', description: res.message, variant: 'destructive' })
             const sprints = res.data
+            setSprints(sprints)
             console.log(sprints);
-
-            const orderedSprints = orderByDate(sprints)
-            setSprints(orderedSprints)
         }
         fetchSprints()
     }, [])
