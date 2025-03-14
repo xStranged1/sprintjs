@@ -57,7 +57,7 @@ export const filterSprints = (sprints: Sprint[], filter: Filter): Sprint[] => {
         console.log(min);
         console.log(max);
 
-        filteredSprints = sprints.filter(sprint => (sprint.distance > min && sprint.distance < max))
+        filteredSprints = filteredSprints.filter(sprint => (sprint.distance > min && sprint.distance < max))
     }
     return filteredSprints
 }

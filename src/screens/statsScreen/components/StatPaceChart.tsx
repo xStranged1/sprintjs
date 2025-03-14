@@ -1,7 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartConfig, ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { chartData } from "@/consts/dummyData";
 import { toast } from "@/hooks/use-toast";
 import { filterSprints, getAllSprints } from "@/services/sprintService";
 import { Filter, Sprint } from "@/types/Sprint";
@@ -36,6 +35,7 @@ export function StatPaceChart() {
     const [timeRange, setTimeRange] = useState("90d");
     const [loading, setLoading] = useState(true)
     const [sprints, setSprints] = useState<Sprint[]>([])
+    const [fetchedSprints, setFetchedSprints] = useState<Sprint[]>([])
 
     useEffect(() => {
         const fetchSprints = async () => {
@@ -45,22 +45,23 @@ export function StatPaceChart() {
             if (!res.success) return toast({ title: 'Hubo un error recuperando los sprints', description: res.message, variant: 'destructive' })
             const sprints = res.data.reverse()
             setSprints(sprints)
+            setFetchedSprints(sprints)
         }
         fetchSprints()
     }, [])
 
-    const filteredData = chartData.filter((item) => {
-        const date = new Date(item.date);
-        const now = new Date();
-        let daysToSubtract = 90;
-        if (timeRange === "30d") {
-            daysToSubtract = 30;
-        } else if (timeRange === "7d") {
-            daysToSubtract = 7;
-        }
-        now.setDate(now.getDate() - daysToSubtract);
-        return date >= now;
-    });
+    // const filteredData = chartData.filter((item) => {
+    //     const date = new Date(item.date);
+    //     const now = new Date();
+    //     let daysToSubtract = 90;
+    //     if (timeRange === "30d") {
+    //         daysToSubtract = 30;
+    //     } else if (timeRange === "7d") {
+    //         daysToSubtract = 7;
+    //     }
+    //     now.setDate(now.getDate() - daysToSubtract);
+    //     return date >= now;
+    // });
 
     const chartSprint = useMemo(() => {
         if (sprints.length > 0) {
@@ -80,12 +81,13 @@ export function StatPaceChart() {
 
     const handleApplyFilter = (filter: Filter) => {
         console.log(filter);
-        const filteredSprints = filterSprints(sprints, filter)
+        const filteredSprints = filterSprints(fetchedSprints, filter)
         setSprints(filteredSprints)
     }
 
     return (
         <Card>
+            {loading ?? <h2>loading...</h2>}
             <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
                 <div className="flex flex-row items-center gap-6">
                     <div className="grid flex-1 gap-1 text-center sm:text-left">
