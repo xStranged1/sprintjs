@@ -13,6 +13,7 @@ import { BaseSprint, Circuit, Sprint } from "@/types/Sprint"
 import { getPace, getTotalSeconds } from "@/utils/utils"
 import { useEffect, useRef, useState } from "react"
 import { DistanceFields } from "./DistanceFields"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 interface PropsCreateSprint {
     closeDialog: (booelan: boolean) => void,
@@ -139,16 +140,25 @@ export const CreateSprint = ({ closeDialog, onSubmit }: PropsCreateSprint) => {
                     <Label htmlFor="name" className="text-right">
                         Nivel de esfuerzo (opcional)
                     </Label>
-                    <Slider
-                        value={effort}
-                        onValueChange={(v) => { setEffort(v); setHaveEffort(true); }}
-                        className="w-full"
-                        defaultValue={[50]}
-                        max={100}
-                        step={1}
-                    />
+                    <TooltipProvider>
+                        <Tooltip open={true}  >
+                            <TooltipContent side="bottom">
+                                <p className="font-bold text-sm">{effort}</p>
+                            </TooltipContent>
+                            <TooltipTrigger asChild>
+                                <Slider
+                                    value={effort}
+                                    onValueChange={(v) => { setEffort(v); setHaveEffort(true); }}
+                                    className="w-full"
+                                    defaultValue={[50]}
+                                    max={100}
+                                    step={1}
+                                />
+                            </TooltipTrigger>
+                        </Tooltip>
+                    </TooltipProvider>
                 </DialogHeader>
-                <DialogHeader className="flex flex-row justify-between items-center mr-5 gap-4">
+                <DialogHeader className="mt-8 flex flex-row justify-between items-center mr-5 gap-4">
                     <Label htmlFor="name" className="text-right">
                         Comentario
                     </Label>

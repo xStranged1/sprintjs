@@ -1,5 +1,5 @@
 import { ApiResponse } from "@/types/Response";
-import { BaseSprint, Sprint } from "@/types/Sprint";
+import { BaseSprint, Filter, Sprint } from "@/types/Sprint";
 import { apiRequest } from "./api";
 import { format } from "date-fns";
 
@@ -43,4 +43,21 @@ export const completeDates = (sprints: Sprint[]) => {
     }
 
     return resultado;
+}
+
+export const filterSprints = (sprints: Sprint[], filter: Filter): Sprint[] => {
+    let filteredSprints = structuredClone(sprints)
+    if (filter.takeBreak != undefined) {
+        filteredSprints = sprints.filter(sprint => sprint.takeBreak === filter.takeBreak)
+    }
+
+    if (filter.distanceRange) {
+        let min = filter.distanceRange.min ?? 0
+        let max = filter.distanceRange.max ?? Infinity
+        console.log(min);
+        console.log(max);
+
+        filteredSprints = sprints.filter(sprint => (sprint.distance > min && sprint.distance < max))
+    }
+    return filteredSprints
 }

@@ -3,18 +3,16 @@ import { ChartConfig, ChartContainer, ChartLegend, ChartLegendContent, ChartTool
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { chartData } from "@/consts/dummyData";
 import { toast } from "@/hooks/use-toast";
-import { getAllSprints } from "@/services/sprintService";
-import { Sprint } from "@/types/Sprint";
+import { filterSprints, getAllSprints } from "@/services/sprintService";
+import { Filter, Sprint } from "@/types/Sprint";
 import { useEffect, useMemo, useState } from "react";
 import { format } from "date-fns";
-
-
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
-import { Watch } from "lucide-react";
 import { formatTime } from "@/utils/utils";
+import { FilterPopover } from "@/core/FilterPopover";
+import { Watch } from "lucide-react";
 
 export const description = "An interactive area chart";
-
 
 const chartConfig = {
     visitors: {
@@ -80,15 +78,23 @@ export function StatPaceChart() {
 
     }, [sprints]);
 
+    const handleApplyFilter = (filter: Filter) => {
+        console.log(filter);
+        const filteredSprints = filterSprints(sprints, filter)
+        setSprints(filteredSprints)
+    }
 
     return (
         <Card>
             <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
-                <div className="grid flex-1 gap-1 text-center sm:text-left">
-                    <CardTitle>Ritmo Promedio</CardTitle>
-                    <CardDescription>
-                        Mostrando datos del ultimo año
-                    </CardDescription>
+                <div className="flex flex-row items-center gap-6">
+                    <div className="grid flex-1 gap-1 text-center sm:text-left">
+                        <CardTitle>Ritmo Promedio</CardTitle>
+                        <CardDescription>
+                            Mostrando datos del ultimo año
+                        </CardDescription>
+                    </div>
+                    <FilterPopover onApplyFilter={handleApplyFilter} />
                 </div>
                 <Select value={timeRange} onValueChange={setTimeRange}>
                     <SelectTrigger

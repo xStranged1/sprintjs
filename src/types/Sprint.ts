@@ -23,3 +23,9 @@ export interface Circuit {
 }
 
 export type OrderedBy = 'date' | 'time' | 'pace' | 'circuit'
+
+export interface Filter {
+    dateRange?: any,
+    distanceRange?: DoubleRange
+    takeBreak?: boolean
+}

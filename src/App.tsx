@@ -21,9 +21,9 @@ function App() {
     */}
       <Switch>
         <Route path="/sprintjs" component={HomeScreen} />
-        <Route path="/stats" component={StatsScreen} />
-        <Route path="/calculate-pace" component={PaceScreen} />
-        <Route path="/users/:name">
+        <Route path="/sprintjs/stats" component={StatsScreen} />
+        <Route path="/sprintjs/calculate-pace" component={PaceScreen} />
+        <Route path="/sprintjs/users/:name">
           {(params) => <>Hello, {params.name}!</>}
         </Route>
 
