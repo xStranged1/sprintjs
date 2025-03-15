@@ -54,10 +54,36 @@ export const filterSprints = (sprints: Sprint[], filter: Filter): Sprint[] => {
     if (filter.distanceRange) {
         let min = filter.distanceRange.min ?? 0
         let max = filter.distanceRange.max ?? Infinity
-        console.log(min);
-        console.log(max);
-
         filteredSprints = filteredSprints.filter(sprint => (sprint.distance > min && sprint.distance < max))
     }
+    return filteredSprints
+}
+
+export const filterDateSprint = (sprints: Sprint[], date: string): Sprint[] => {
+
+    const filteredSprints = sprints.filter((sprint) => {
+        const dateSprint = new Date(sprint.date);
+        const now = new Date();
+        let daysToSubtract = 90;
+
+        if (date === "7d") {
+            daysToSubtract = 7;
+        }
+        if (date === "30d") {
+            daysToSubtract = 30;
+        }
+        if (date === "90d") {
+            daysToSubtract = 90;
+        }
+        if (date === "180d") {
+            daysToSubtract = 180;
+        }
+        if (date === "365d") {
+            daysToSubtract = 365;
+        }
+        const pastDate = new Date(now);
+        pastDate.setDate(now.getDate() - daysToSubtract);
+        return dateSprint >= pastDate;
+    });
     return filteredSprints
 }

@@ -8,22 +8,25 @@ import { Filter as FilterIcon } from "lucide-react"
 import { useRef, useState } from "react"
 
 interface ParamsFilter {
+    filter: Filter | undefined
     onApplyFilter: (filter: Filter) => void
 }
 
-export const FilterPopover = ({ onApplyFilter }: ParamsFilter) => {
+export const FilterPopover = ({ filter, onApplyFilter }: ParamsFilter) => {
+    console.log("filter");
+    console.log(filter);
 
     const [open, setOpen] = useState(false)
-    const [takeBreak, setTakeBreak] = useState(false)
-    const minDistance = useRef('')
-    const maxDistance = useRef('')
-    const takeBreakRef = useRef<boolean | undefined>()
+    const [takeBreak, setTakeBreak] = useState(filter?.takeBreak ?? false)
+    const [minDistance, setMinDistance] = useState(filter?.distanceRange?.min ?? '')
+    const [maxDistance, setMaxDistance] = useState(filter?.distanceRange?.max ?? '')
+    const takeBreakRef = useRef<boolean | undefined>(filter?.takeBreak ?? undefined)
 
     const handleApplyFilters = () => {
         const newFilter: Filter = {
             distanceRange: {
-                min: minDistance.current ? Number(minDistance.current) : undefined,
-                max: maxDistance.current ? Number(maxDistance.current) : undefined
+                min: minDistance ? Number(minDistance) : undefined,
+                max: maxDistance ? Number(maxDistance) : undefined
             },
             takeBreak: takeBreakRef.current
         }
@@ -49,7 +52,8 @@ export const FilterPopover = ({ onApplyFilter }: ParamsFilter) => {
                         <div className="items-center">
                             <Label htmlFor="name">Distancia mínima (m)</Label>
                             <Input
-                                onChange={(text) => minDistance.current = text.target.value}
+                                onChange={(text) => setMinDistance(text.target.value)}
+                                value={minDistance}
                                 id="distance"
                                 className="max-w-36 flex-1 mt-1"
                             />
@@ -57,7 +61,8 @@ export const FilterPopover = ({ onApplyFilter }: ParamsFilter) => {
                         <div className="items-center">
                             <Label htmlFor="name">Distancia máxima (m)</Label>
                             <Input
-                                onChange={(text) => maxDistance.current = text.target.value}
+                                onChange={(text) => setMaxDistance(text.target.value)}
+                                value={maxDistance}
                                 id="distance"
                                 className="max-w-36 flex-1 mt-1"
                             />

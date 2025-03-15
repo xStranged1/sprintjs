@@ -2,11 +2,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { ChartConfig, ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "@/hooks/use-toast";
-import { filterSprints, getAllSprints } from "@/services/sprintService";
+import { filterDateSprint, filterSprints, getAllSprints } from "@/services/sprintService";
 import { Filter, Sprint } from "@/types/Sprint";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { format } from "date-fns";
-import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { formatTime } from "@/utils/utils";
 import { FilterPopover } from "@/core/FilterPopover";
 import { Watch } from "lucide-react";
@@ -17,25 +17,23 @@ const chartConfig = {
     visitors: {
         label: "Visitors",
     },
-    kilometers: {
-        label: "Kilometros",
-        color: "hsl(var(--chart-3))",
-    },
     mobile: {
         label: "Mobile",
         color: "hsl(var(--chart-2))",
     },
     pace: {
-        label: "Mobile",
-        color: "hsl(var(--chart-1))",
+        label: "Ritmo",
+        color: "hsl(var(--chart-4))",
     },
 } satisfies ChartConfig;
 
 export function StatPaceChart() {
+
     const [timeRange, setTimeRange] = useState("90d");
     const [loading, setLoading] = useState(true)
     const [sprints, setSprints] = useState<Sprint[]>([])
     const [fetchedSprints, setFetchedSprints] = useState<Sprint[]>([])
+    const filterRef = useRef<Filter>()
 
     useEffect(() => {
         const fetchSprints = async () => {
@@ -49,19 +47,6 @@ export function StatPaceChart() {
         }
         fetchSprints()
     }, [])
-
-    // const filteredData = chartData.filter((item) => {
-    //     const date = new Date(item.date);
-    //     const now = new Date();
-    //     let daysToSubtract = 90;
-    //     if (timeRange === "30d") {
-    //         daysToSubtract = 30;
-    //     } else if (timeRange === "7d") {
-    //         daysToSubtract = 7;
-    //     }
-    //     now.setDate(now.getDate() - daysToSubtract);
-    //     return date >= now;
-    // });
 
     const chartSprint = useMemo(() => {
         if (sprints.length > 0) {
@@ -79,9 +64,30 @@ export function StatPaceChart() {
 
     }, [sprints]);
 
-    const handleApplyFilter = (filter: Filter) => {
-        console.log(filter);
-        const filteredSprints = filterSprints(fetchedSprints, filter)
+    const handleSetDateRange = (date: string) => {
+
+        setTimeRange(date);
+        if (date === "overall") {
+            setSprints(fetchedSprints);
+            return;
+        }
+        const filteredSprints = filterDateSprint(fetchedSprints, date)
+        setSprints(filteredSprints);
+    };
+
+    useEffect(() => {
+        if (filterRef.current) handleApplyFilter(filterRef.current, true)
+    }, [timeRange])
+
+    const handleApplyFilter = (filter: Filter, filterFromSprints?: boolean) => {
+        let filterFrom: Sprint[]
+        if (timeRange != 'overall') {
+            filterFrom = sprints
+        } else {
+            filterFrom = fetchedSprints
+        }
+        filterRef.current = filter
+        const filteredSprints = filterSprints(filterFromSprints ? sprints : filterFrom, filter)
         setSprints(filteredSprints)
     }
 
@@ -96,24 +102,33 @@ export function StatPaceChart() {
                             Mostrando datos del ultimo año
                         </CardDescription>
                     </div>
-                    <FilterPopover onApplyFilter={handleApplyFilter} />
+                    <FilterPopover filter={filterRef.current} onApplyFilter={handleApplyFilter} />
                 </div>
-                <Select value={timeRange} onValueChange={setTimeRange}>
+                <Select value={timeRange} onValueChange={handleSetDateRange}>
                     <SelectTrigger
                         className="w-[160px] rounded-lg sm:ml-auto"
                         aria-label="Select a value"
                     >
-                        <SelectValue placeholder="Last 3 months" />
+                        <SelectValue placeholder="Ultimos 3 meses" />
                     </SelectTrigger>
                     <SelectContent className="rounded-xl">
+                        <SelectItem value="overall" className="rounded-lg">
+                            Todos los tiempos
+                        </SelectItem>
+                        <SelectItem value="365d" className="rounded-lg">
+                            Ultimo año
+                        </SelectItem>
+                        <SelectItem value="180d" className="rounded-lg">
+                            Ultimos 6 meses
+                        </SelectItem>
                         <SelectItem value="90d" className="rounded-lg">
-                            Last 3 months
+                            Ultimos 3 meses
                         </SelectItem>
                         <SelectItem value="30d" className="rounded-lg">
-                            Last 30 days
+                            Ultimo mes
                         </SelectItem>
                         <SelectItem value="7d" className="rounded-lg">
-                            Last 7 days
+                            Ultima semana
                         </SelectItem>
                     </SelectContent>
                 </Select>
@@ -121,22 +136,10 @@ export function StatPaceChart() {
             <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
                 <ChartContainer
                     config={chartConfig}
-                    className="aspect-auto h-[250px]     w-full"
+                    className="aspect-auto h-[250px] w-full"
                 >
                     <AreaChart data={chartSprint}>
                         <defs>
-                            <linearGradient id="fillDesktop" x1="0" y1="0" x2="0" y2="1">
-                                <stop
-                                    offset="5%"
-                                    stopColor="hsl(var(--chart-1))"
-                                    stopOpacity={0.8}
-                                />
-                                <stop
-                                    offset="95%"
-                                    stopColor="hsl(var(--chart-1))"
-                                    stopOpacity={0.1}
-                                />
-                            </linearGradient>
                             <linearGradient id="fillMobile" x1="0" y1="0" x2="0" y2="1">
                                 <stop
                                     offset="5%"
@@ -163,6 +166,9 @@ export function StatPaceChart() {
                             </linearGradient>
                         </defs>
                         <CartesianGrid vertical={false} />
+                        <YAxis type="number" domain={[150, (dataMax: string) => dataMax + 5]} allowDataOverflow
+                            tickFormatter={(value) => formatTime(value)}
+                        />
                         <XAxis
                             dataKey="date"
                             tickLine={false}
@@ -192,13 +198,6 @@ export function StatPaceChart() {
                                     indicator="dot"
                                 />
                             }
-                        />
-                        <Area
-                            dataKey="mobile"
-                            type="natural"
-                            fill="url(#fillMobile)"
-                            stroke="var(--color-mobile)"
-                            stackId="a"
                         />
                         <Area
                             dataKey="pace"
