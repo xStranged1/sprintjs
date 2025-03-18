@@ -8,16 +8,16 @@ import { Slider } from "@/components/ui/slider"
 import { Textarea } from "@/components/ui/textarea"
 import { TimePicker } from "@/components/ui/TimePicker"
 import { useToast } from "@/hooks/use-toast"
-import { createSprint } from "@/services/sprintService"
-import { BaseSprint, Circuit, Sprint } from "@/types/Sprint"
+import { createSprint, ResCreateSprint } from "@/services/sprintService"
+import { BaseSprint, Circuit } from "@/types/Sprint"
 import { getPace, getTotalSeconds } from "@/utils/utils"
 import { useEffect, useRef, useState } from "react"
 import { DistanceFields } from "./DistanceFields"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 interface PropsCreateSprint {
-    closeDialog: (booelan: boolean) => void,
-    onSubmit: (newSprint: Sprint) => void
+    closeDialog: (boolean: boolean) => void,
+    onSubmit: (data: ResCreateSprint) => void
 }
 
 export const CreateSprint = ({ closeDialog, onSubmit }: PropsCreateSprint) => {

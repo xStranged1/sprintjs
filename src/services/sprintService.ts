@@ -2,9 +2,15 @@ import { ApiResponse } from "@/types/Response";
 import { BaseSprint, Filter, Sprint } from "@/types/Sprint";
 import { apiRequest } from "./api";
 import { format } from "date-fns";
+import { IPersonalRecord } from "@/types/Stat";
 
-export const createSprint = async (sprint: BaseSprint): Promise<ApiResponse<Sprint>> => {
-    const response = await apiRequest<Sprint>('/sprint', 'POST', sprint)
+export interface ResCreateSprint {
+    newSprint: Sprint,
+    newPersonalRecord?: IPersonalRecord
+}
+
+export const createSprint = async (sprint: BaseSprint): Promise<ApiResponse<ResCreateSprint>> => {
+    const response = await apiRequest<ResCreateSprint>('/sprint', 'POST', sprint)
     return response
 }
 

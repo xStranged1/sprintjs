@@ -43,7 +43,7 @@ export function PersonalRecords() {
         if (personalRecords.length == 0) return <h2 className="pl-14">No tienes record personal en esta distancia</h2>
 
         return (
-            <div className="pl-14 flex flex-row gap-16">
+            <div className="pl-14 flex flex-row gap-16 max-w-full flex-wrap">
                 {personalRecords.map((pr, i) => {
                     const trophy = i == 0 ? 'gold' : i == 1 ? 'silver' : i == 2 ? 'bronze' : undefined;
                     const bgBadge = trophy ? i == 0 ? 'bg-[#f4bf1f]' : i == 1 ? 'bg-[#c4c4c4]' : i == 2 ? 'bg-[#cf8338]' : undefined : undefined;

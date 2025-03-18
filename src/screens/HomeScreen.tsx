@@ -8,6 +8,8 @@ import { CardSprint } from '@/core/CardSprint'
 import { Dialog, DialogTrigger } from '@/components/ui/dialog'
 import { CreateSprint } from './components/CreateSprint'
 import { FilterBar } from './components/FilterBar'
+import { IPersonalRecord } from '@/types/Stat'
+import { AnimationConfetti } from '@/core/AnimationConffetti'
 
 export const HomeScreen = () => {
 
@@ -16,11 +18,21 @@ export const HomeScreen = () => {
     const [open, setOpen] = useState(false)
     const [orderedBy, setOrderedBy] = useState<OrderedBy>('date')
     const [isOrderedAscending, setIsOrderedAscending] = useState(false)
-
     const { toast } = useToast()
+    const [showConfetti, setShowConfetti] = useState(false)
 
-    const addSprint = (newSprint: Sprint) => {
-        setSprints((prevSprints) => [...prevSprints, newSprint])
+    const handleSubmit = (data: { newSprint: Sprint, newPersonalRecord?: IPersonalRecord }) => {
+        setSprints((prevSprints) => [...prevSprints, data.newSprint])
+        if (data.newPersonalRecord) {
+            const distanceCategory = data.newPersonalRecord.distance.distance
+            toast({
+                title: 'Felicidades! Rompiste un record personal',
+                description: `Nuevo record personal en la categoria de ${distanceCategory}m`,
+                duration: 6000
+            })
+            setShowConfetti(true)
+        }
+        return
     }
 
     useEffect(() => {
@@ -67,13 +79,14 @@ export const HomeScreen = () => {
 
     return (
         <div>
+            {showConfetti && <AnimationConfetti />}
             <div className='flex justify-between gap-5 items-center'>
                 <FilterBar orderedBy={orderedBy} setOrderedBy={setOrderedBy} isOrderedAscending={isOrderedAscending} setIsOrderedAscending={setIsOrderedAscending} />
                 <Dialog open={open} onOpenChange={setOpen}>
                     <DialogTrigger asChild>
                         <Button className='bg-primary'>Crear nuevo Sprint</Button>
                     </DialogTrigger>
-                    <CreateSprint closeDialog={setOpen} onSubmit={addSprint} />
+                    <CreateSprint closeDialog={setOpen} onSubmit={handleSubmit} />
                 </Dialog>
             </div>
             {loading && (<h2>Loading...</h2>)}
