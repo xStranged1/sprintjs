@@ -1,8 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartConfig, ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { toast } from "@/hooks/use-toast";
-import { filterDateSprint, filterSprints, getAllSprints } from "@/services/sprintService";
+import { filterDateSprint, filterSprints } from "@/services/sprintService";
 import { Filter, Sprint } from "@/types/Sprint";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { format } from "date-fns";
@@ -10,6 +9,7 @@ import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { formatTime } from "@/utils/utils";
 import { FilterPopover } from "@/core/FilterPopover";
 import { Watch } from "lucide-react";
+import { StatProps } from "@/types/Stat";
 
 export const description = "An interactive area chart";
 
@@ -27,26 +27,12 @@ const chartConfig = {
     },
 } satisfies ChartConfig;
 
-export function StatPaceChart() {
+export function StatPaceChart({ fetchedSprints, loading }: StatProps) {
 
     const [timeRange, setTimeRange] = useState("90d");
-    const [loading, setLoading] = useState(true)
     const [sprints, setSprints] = useState<Sprint[]>([])
-    const [fetchedSprints, setFetchedSprints] = useState<Sprint[]>([])
     const filterRef = useRef<Filter>()
-
-    useEffect(() => {
-        const fetchSprints = async () => {
-            setLoading(true)
-            const res = await getAllSprints()
-            setLoading(false)
-            if (!res.success) return toast({ title: 'Hubo un error recuperando los sprints', description: res.message, variant: 'destructive' })
-            const sprints = res.data.reverse()
-            setSprints(sprints)
-            setFetchedSprints(sprints)
-        }
-        fetchSprints()
-    }, [])
+    useEffect(() => { setSprints(fetchedSprints) }, [fetchedSprints])
 
     const chartSprint = useMemo(() => {
         if (sprints.length > 0) {

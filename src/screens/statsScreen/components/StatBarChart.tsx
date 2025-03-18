@@ -3,12 +3,12 @@ import '@/App.css'
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useEffect, useMemo, useState } from 'react';
-import { completeDates, getAllSprints } from '@/services/sprintService';
-import { toast } from '@/hooks/use-toast';
+import { completeDates } from '@/services/sprintService';
 import { Sprint } from '@/types/Sprint';
 import { format } from "date-fns";
 import { formatTime } from '@/utils/utils';
 import { Ruler, Timer } from 'lucide-react';
+import { StatProps } from '@/types/Stat';
 
 const chartConfig = {
     views: {
@@ -24,22 +24,11 @@ const chartConfig = {
     },
 } satisfies ChartConfig;
 
-export const StatBarChart = () => {
-    const [activeChart, setActiveChart] = useState<keyof typeof chartConfig>("kilometers");
-    const [loading, setLoading] = useState(true)
-    const [sprints, setSprints] = useState<Sprint[]>([])
+export const StatBarChart = ({ fetchedSprints, loading }: StatProps) => {
 
-    useEffect(() => {
-        const fetchSprints = async () => {
-            setLoading(true)
-            const res = await getAllSprints()
-            setLoading(false)
-            if (!res.success) return toast({ title: 'Hubo un error recuperando los sprints', description: res.message, variant: 'destructive' })
-            const sprints = res.data.reverse()
-            setSprints(sprints)
-        }
-        fetchSprints()
-    }, [])
+    const [activeChart, setActiveChart] = useState<keyof typeof chartConfig>("kilometers");
+    const [sprints, setSprints] = useState<Sprint[]>([])
+    useEffect(() => { setSprints(fetchedSprints) }, [fetchedSprints])
 
     const total = useMemo(() => {
         if (sprints.length > 0) {
