@@ -12,8 +12,8 @@ createRoot(document.getElementById('root')!).render(
       clientId={VITE_AUTH0_CLIENT_ID}
       authorizationParams={{
         redirect_uri: window.location.origin,
-        audience: "sprintjs-back",
-        scope: "openid profile email read:messages read:current_user",
+        audience: VITE_AUDIENCE,
+        scope: VITE_SCOPE,
       }}
     >
       <App />
