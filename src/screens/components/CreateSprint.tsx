@@ -14,6 +14,7 @@ import { getPace, getTotalSeconds } from "@/utils/utils"
 import { useEffect, useRef, useState } from "react"
 import { DistanceFields } from "./DistanceFields"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { useGetAccessToken } from "@/services/api"
 
 interface PropsCreateSprint {
     closeDialog: (boolean: boolean) => void,
@@ -39,6 +40,7 @@ export const CreateSprint = ({ closeDialog, onSubmit }: PropsCreateSprint) => {
     const [haveEffort, setHaveEffort] = useState<boolean>(false)
 
     const { toast } = useToast()
+    const getAccessToken = useGetAccessToken();
 
     const handleSubmit = async () => {
         const hours = time?.getHours()
@@ -55,7 +57,8 @@ export const CreateSprint = ({ closeDialog, onSubmit }: PropsCreateSprint) => {
             effort: haveEffort ? effort[0] : undefined,
             temperature: Number(temperature)
         }
-        const res = await createSprint(newSprint)
+        const token = await getAccessToken()
+        const res = await createSprint(newSprint, token)
         if (!res.success) return toast({ title: 'Hubo un error creando el sprint', description: res.message, variant: 'destructive' })
         toast({ title: 'Sprint creado con exito!' })
         closeDialog(false)

@@ -11,6 +11,7 @@ import { FilterBar } from './components/FilterBar'
 import { IPersonalRecord } from '@/types/Stat'
 import { AnimationConfetti } from '@/core/AnimationConffetti'
 import { useAuth0 } from '@auth0/auth0-react'
+import { useGetAccessToken } from '@/services/api'
 
 export const HomeScreen = () => {
 
@@ -22,6 +23,8 @@ export const HomeScreen = () => {
     const { toast } = useToast()
     const [showConfetti, setShowConfetti] = useState(false)
     const { user, isAuthenticated, isLoading } = useAuth0();
+    const getAccessToken = useGetAccessToken();
+
     console.log("user");
     console.log(user);
     console.log("isAuthenticated");
@@ -46,7 +49,8 @@ export const HomeScreen = () => {
     useEffect(() => {
         const fetchSprints = async () => {
             setLoading(true)
-            const res = await getAllSprints()
+            const token = await getAccessToken()
+            const res = await getAllSprints(token)
             setLoading(false)
             if (!res.success) return toast({ title: 'Hubo un error recuperando los sprints', description: res.message, variant: 'destructive' })
             const sprints = res.data

@@ -4,27 +4,20 @@ import iconRunningBlue from "@/assets/iconRunningBlue.png"
 import { useAuth0 } from "@auth0/auth0-react";
 import { useEffect, useState } from "react";
 import { VITE_AUTH0_DOMAIN } from "@/config/config";
+import { useGetAccessToken } from "@/services/api";
 
 export function Navbar() {
 
     const [location] = useLocation();
     const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
     const [userMetadata, setUserMetadata] = useState(null);
+    const getAccessToken = useGetAccessToken();
 
     useEffect(() => {
         const getUserMetadata = async () => {
             try {
-                const accessToken = await getAccessTokenSilently({
-                    authorizationParams: {
-                        audience: `sprintjs-back`,
-                        scope: "read:messages",
-                    },
-                });
-                console.log("accessToken to call a api");
-                console.log(accessToken);
-
+                const accessToken = await getAccessToken()
                 const userDetailsByIdUrl = `https://${VITE_AUTH0_DOMAIN}/api/v2/users/${user?.sub}`;
-
                 const metadataResponse = await fetch(userDetailsByIdUrl, {
                     headers: {
                         Authorization: `Bearer ${accessToken}`,
@@ -39,6 +32,8 @@ export function Navbar() {
                 console.log(e.message);
             }
         };
+        console.log("user de auth0");
+        console.log(user);
 
         getUserMetadata();
     }, [getAccessTokenSilently, user?.sub]);

@@ -33,6 +33,9 @@ export const StatBarChart = ({ fetchedSprints, loading }: StatProps) => {
     const total = useMemo(() => {
         if (sprints.length > 0) {
             console.log('setea total');
+            console.log(sprints);
+            console.log(sprints);
+
             const completedSprints = completeDates(sprints)
             console.log("completedSprints");
             console.log(completedSprints);

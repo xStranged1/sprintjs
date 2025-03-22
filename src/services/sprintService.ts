@@ -9,13 +9,13 @@ export interface ResCreateSprint {
     newPersonalRecord?: IPersonalRecord
 }
 
-export const createSprint = async (sprint: BaseSprint): Promise<ApiResponse<ResCreateSprint>> => {
-    const response = await apiRequest<ResCreateSprint>('/sprint', 'POST', sprint)
+export const createSprint = async (sprint: BaseSprint, token?: string): Promise<ApiResponse<ResCreateSprint>> => {
+    const response = await apiRequest<ResCreateSprint>('/sprint', 'POST', token, sprint)
     return response
 }
 
-export const getAllSprints = async (): Promise<ApiResponse<Sprint[]>> => {
-    const response = await apiRequest<Sprint[]>("/sprint", "GET");
+export const getAllSprints = async (token?: string): Promise<ApiResponse<Sprint[]>> => {
+    const response = await apiRequest<Sprint[]>("/sprint", "GET", token);
     return response
 }
 
@@ -26,6 +26,7 @@ export const orderByDate = (sprints: Sprint[]): Sprint[] => {
         return dateB.getTime() - dateA.getTime()
     })
 }
+
 export const orderByTime = (sprints: Sprint[]): Sprint[] => sprints.sort((a, b) => a.time - b.time)
 
 export const completeDates = (sprints: Sprint[]) => {
