@@ -11,7 +11,7 @@ createRoot(document.getElementById('root')!).render(
       domain={VITE_AUTH0_DOMAIN}
       clientId={VITE_AUTH0_CLIENT_ID}
       authorizationParams={{
-        redirect_uri: window.location.origin,
+        redirect_uri: `${window.location.origin}/sprintjs`,
         audience: VITE_AUDIENCE,
         scope: VITE_SCOPE,
       }}
