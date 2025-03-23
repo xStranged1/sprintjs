@@ -5,7 +5,7 @@ import { LogOut, MapPin, Settings, SquareUser, User as UserIcon } from "lucide-r
 
 export const NavBarAccount = ({ user }: { user?: User }) => {
     const { loginWithRedirect, logout } = useAuth0();
-
+    const redirectLogOut = `${window.location.origin}/sprintjs`
     if (!user) {
         return (
             <div className="justify-self-end mr-16 ">
@@ -60,7 +60,7 @@ export const NavBarAccount = ({ user }: { user?: User }) => {
                             </div>
                         </MenubarItem>
                         <MenubarSeparator />
-                        <MenubarItem onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}
+                        <MenubarItem onClick={() => logout({ logoutParams: { returnTo: redirectLogOut } })}
                             className="cursor-pointer"
                         >
                             <div className="flex flex-row justify-between items-center gap-2">
