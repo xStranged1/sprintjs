@@ -1,45 +1,19 @@
 import { Link, useLocation } from "wouter";
-import { Title } from "./Title";
+import { Title } from "../Title";
 import iconRunningBlue from "@/assets/iconRunningBlue.png"
 import { useAuth0 } from "@auth0/auth0-react";
-import { useEffect, useState } from "react";
-import { VITE_AUTH0_DOMAIN } from "@/config/config";
-import { useGetAccessToken } from "@/services/api";
+import { NavBarAccount } from "./components/NavbarAccount";
 
 export function Navbar() {
 
     const [location] = useLocation();
-    const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
-    const [userMetadata, setUserMetadata] = useState(null);
-    const getAccessToken = useGetAccessToken();
-
-    useEffect(() => {
-        const getUserMetadata = async () => {
-            try {
-                const accessToken = await getAccessToken()
-                const userDetailsByIdUrl = `https://${VITE_AUTH0_DOMAIN}/api/v2/users/${user?.sub}`;
-                const metadataResponse = await fetch(userDetailsByIdUrl, {
-                    headers: {
-                        Authorization: `Bearer ${accessToken}`,
-                    },
-                });
-
-                const { user_metadata } = await metadataResponse.json();
-
-                setUserMetadata(user_metadata);
-            } catch (e: any) {
-                console.log("error in getUserMetadata");
-                console.log(e.message);
-            }
-        };
-        console.log("user de auth0");
-        console.log(user);
-
-        getUserMetadata();
-    }, [getAccessTokenSilently, user?.sub]);
+    const { user } = useAuth0();
 
     return (
-        <div className="mt-20">
+        <div className="mt-12">
+
+            <NavBarAccount user={user} />
+            <div className="mt-5" />
             {(location == "/sprintjs/" || location == "/sprintjs") && (
                 <div className="">
                     <img src={iconRunningBlue} className="w-24 justify-self-center mb-2" />

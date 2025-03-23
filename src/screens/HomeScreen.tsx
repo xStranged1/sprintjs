@@ -10,7 +10,6 @@ import { CreateSprint } from './components/CreateSprint'
 import { FilterBar } from './components/FilterBar'
 import { IPersonalRecord } from '@/types/Stat'
 import { AnimationConfetti } from '@/core/AnimationConffetti'
-import { useAuth0 } from '@auth0/auth0-react'
 import { useGetAccessToken } from '@/services/api'
 
 export const HomeScreen = () => {
@@ -22,15 +21,7 @@ export const HomeScreen = () => {
     const [isOrderedAscending, setIsOrderedAscending] = useState(false)
     const { toast } = useToast()
     const [showConfetti, setShowConfetti] = useState(false)
-    const { user, isAuthenticated, isLoading } = useAuth0();
     const getAccessToken = useGetAccessToken();
-
-    console.log("user");
-    console.log(user);
-    console.log("isAuthenticated");
-    console.log(isAuthenticated);
-    console.log("isLoading");
-    console.log(isLoading);
 
     const handleSubmit = (data: { newSprint: Sprint, newPersonalRecord?: IPersonalRecord }) => {
         setSprints((prevSprints) => [...prevSprints, data.newSprint])

@@ -6,6 +6,7 @@ import { Circuit } from "@/types/Sprint"
 import { Label } from "@radix-ui/react-label"
 import { useEffect, useState } from "react"
 import { CreateCircuit } from "./CreateCircuit"
+import { useGetAccessToken } from "@/services/api"
 
 interface Params {
     onInputDistance: (value: string) => void,
@@ -19,10 +20,12 @@ export const DistanceFields = ({ onSelectCircuit, onInputDistance, onInputLaps }
     const [selectedCircuit, setSelectedCircuit] = useState<Circuit | undefined>()
     const [laps, setLaps] = useState('')
     const [circuits, setCircuits] = useState<Circuit[]>([])
+    const getAccessToken = useGetAccessToken();
 
     useEffect(() => {
         const fetchCircuits = async () => {
-            const res = await getAllCircuits()
+            const token = await getAccessToken()
+            const res = await getAllCircuits(token)
             console.log(res);
             if (res.success) {
                 setCircuits(res.data)
@@ -60,7 +63,11 @@ export const DistanceFields = ({ onSelectCircuit, onInputDistance, onInputLaps }
                     </SelectTrigger>
                     <SelectContent>
                         {circuits.map((circuit) => (
-                            <SelectItem key={circuit.name} value={JSON.stringify(circuit)}>{circuit.name}</SelectItem>
+                            <SelectItem
+                                key={circuit.name} value={JSON.stringify(circuit)}
+                                className="cursor-pointer"
+                            >{circuit.name}
+                            </SelectItem>
                         ))}
                         <SelectSeparator />
                         <CreateCircuit />

@@ -7,15 +7,18 @@ import { toast } from "@/hooks/use-toast";
 import { getAllDistances } from "@/services/distanceService";
 import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
+import { useGetAccessToken } from "@/services/api";
 
 export function PersonalRecords() {
 
     const [personalRecords, setPersonalRecords] = useState<IPersonalRecord[]>([])
     const [distances, setDistances] = useState<Distance[]>([])
+    const getAccessToken = useGetAccessToken();
 
     useEffect(() => {
         const fetchRecords = async () => {
-            const res = await getAllPersonalRecords()
+            const token = await getAccessToken()
+            const res = await getAllPersonalRecords(token)
             if (!res.success) {
                 toast({ title: 'Hubo un error recuperando records personales', variant: 'destructive' })
                 return
@@ -29,7 +32,8 @@ export function PersonalRecords() {
 
     useEffect(() => {
         const fetchDistances = async () => {
-            const res = await getAllDistances()
+            const token = await getAccessToken()
+            const res = await getAllDistances(token)
             if (!res.success) {
                 toast({ title: 'Hubo un error recuperando records personales', variant: 'destructive' })
                 return

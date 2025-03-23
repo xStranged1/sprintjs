@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { useToast } from "@/hooks/use-toast"
+import { useGetAccessToken } from "@/services/api"
 import { createCircuit } from "@/services/circuitService"
 import { Plus } from "lucide-react"
 import { useRef, useState } from "react"
@@ -13,6 +14,7 @@ export const CreateCircuit = () => {
     const name = useRef('')
     const distance = useRef('')
     const { toast } = useToast()
+    const getAccessToken = useGetAccessToken();
 
     const handleCreateCircuit = async () => {
 
@@ -20,7 +22,9 @@ export const CreateCircuit = () => {
         if (!distance.current) return
         const numberDistance = Number(distance.current)
         if (isNaN(numberDistance)) return
-        const res = await createCircuit({ name: name.current, distance: numberDistance })
+        const token = await getAccessToken()
+        if (!token) return
+        const res = await createCircuit({ name: name.current, distance: numberDistance }, token)
         if (!res.success) {
             setOpen(false)
             toast({ title: 'Hubo un error creando el circuito', variant: 'destructive' })

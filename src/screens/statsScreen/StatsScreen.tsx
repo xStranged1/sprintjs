@@ -7,15 +7,18 @@ import { Sprint } from '@/types/Sprint'
 import { getAllSprints } from '@/services/sprintService'
 import { toast } from '@/hooks/use-toast'
 import { PersonalRecords } from './components/PersonalRecords'
+import { useGetAccessToken } from '@/services/api'
 
 export const StatsScreen = () => {
     const [loading, setLoading] = useState(true)
     const [sprints, setSprints] = useState<Sprint[]>([])
+    const getAccessToken = useGetAccessToken();
 
     useEffect(() => {
         const fetchSprints = async () => {
             setLoading(true)
-            const res = await getAllSprints()
+            const token = await getAccessToken()
+            const res = await getAllSprints(token)
             setLoading(false)
             if (!res.success) return toast({ title: 'Hubo un error recuperando los sprints', description: res.message, variant: 'destructive' })
             const sprints = res.data.reverse()
