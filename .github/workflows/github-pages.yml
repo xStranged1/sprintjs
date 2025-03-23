@@ -31,6 +31,10 @@ jobs:
       VITE_API_URL: ${{ secrets.VITE_API_URL }}
       VITE_API_PORT: ${{ secrets.VITE_API_PORT }}
       VITE_ENVIRONMENT: ${{ secrets.VITE_ENVIRONMENT }}
+      VITE_AUTH0_CLIENT_ID: ${{ secrets.VITE_AUTH0_CLIENT_ID }}
+      VITE_AUTH0_DOMAIN: ${{ secrets.VITE_AUTH0_DOMAIN }}
+      VITE_SCOPE: ${{ secrets.VITE_SCOPE }}
+      VITE_AUDIENCE: ${{ secrets.VITE_AUDIENCE }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
