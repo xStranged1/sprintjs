@@ -24,8 +24,16 @@ export interface Circuit {
 
 export type OrderedBy = 'date' | 'time' | 'pace' | 'circuit'
 
+export const initialFilter: Filter = {
+    distanceRange: undefined,
+    effortRange: undefined,
+    takeBreak: undefined,
+    dateRange: undefined
+}
+
 export interface Filter {
     dateRange?: any,
     distanceRange?: DoubleRange
-    takeBreak?: boolean
+    takeBreak?: boolean,
+    effortRange?: DoubleRange
 }

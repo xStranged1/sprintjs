@@ -31,12 +31,12 @@ export function StatPaceChart({ fetchedSprints, loading }: StatProps) {
 
     const [timeRange, setTimeRange] = useState("90d");
     const [sprints, setSprints] = useState<Sprint[]>([])
+    const [filteredSprintsByDate, setFilteredSprintsByDate] = useState<Sprint[]>([])
     const filterRef = useRef<Filter>()
-    useEffect(() => { setSprints(fetchedSprints) }, [fetchedSprints])
+    useEffect(() => { setSprints(fetchedSprints); setFilteredSprintsByDate(fetchedSprints) }, [fetchedSprints])
 
     const chartSprint = useMemo(() => {
         if (sprints.length > 0) {
-            console.log('setea total');
             const chart = sprints.map((sprint) => {
                 return {
                     date: format(sprint.date, 'yyyy-MM-dd'),
@@ -59,6 +59,7 @@ export function StatPaceChart({ fetchedSprints, loading }: StatProps) {
         }
         const filteredSprints = filterDateSprint(fetchedSprints, date)
         setSprints(filteredSprints);
+        setFilteredSprintsByDate(filteredSprints)
     };
 
     useEffect(() => {
@@ -66,14 +67,9 @@ export function StatPaceChart({ fetchedSprints, loading }: StatProps) {
     }, [timeRange])
 
     const handleApplyFilter = (filter: Filter, filterFromSprints?: boolean) => {
-        let filterFrom: Sprint[]
-        if (timeRange != 'overall') {
-            filterFrom = sprints
-        } else {
-            filterFrom = fetchedSprints
-        }
+
         filterRef.current = filter
-        const filteredSprints = filterSprints(filterFromSprints ? sprints : filterFrom, filter)
+        const filteredSprints = filterSprints(filterFromSprints ? sprints : filteredSprintsByDate, filter)
         setSprints(filteredSprints)
     }
 

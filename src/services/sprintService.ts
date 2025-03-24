@@ -57,11 +57,28 @@ export const filterSprints = (sprints: Sprint[], filter: Filter): Sprint[] => {
         filteredSprints = sprints.filter(sprint => sprint.takeBreak === filter.takeBreak)
     }
 
-    if (filter.distanceRange) {
-        let min = filter.distanceRange.min ?? 0
-        let max = filter.distanceRange.max ?? Infinity
-        filteredSprints = filteredSprints.filter(sprint => (sprint.distance > min && sprint.distance < max))
+    if (filter.distanceRange != undefined) {
+        if (filter.distanceRange.min || filter.distanceRange.max) {
+            let min = filter.distanceRange.min ?? 0
+            let max = filter.distanceRange.max ?? Infinity
+            filteredSprints = filteredSprints.filter(sprint => (sprint.distance > min && sprint.distance < max))
+        }
     }
+
+    if (filter.effortRange != undefined) {
+        if (filter.effortRange.min || filter.effortRange.max) {
+            let min = filter.effortRange.min ?? 0
+            let max = filter.effortRange.max ?? 100
+            filteredSprints = filteredSprints.filter(sprint => {
+                if (!sprint.effort) return
+                if (sprint.effort > min && sprint.effort < max) {
+                    return sprint
+                }
+            })
+        }
+
+    }
+
     return filteredSprints
 }
 
