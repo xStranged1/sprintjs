@@ -8,6 +8,7 @@ import { getAllSprints } from '@/services/sprintService'
 import { toast } from '@/hooks/use-toast'
 import { PersonalRecords } from './components/PersonalRecords'
 import { useGetAccessToken } from '@/services/api'
+import { StatBarVolume } from './components/StatBarVolume'
 
 export const StatsScreen = () => {
     const [loading, setLoading] = useState(true)
@@ -33,6 +34,8 @@ export const StatsScreen = () => {
             <div className='mt-6' />
             <StatPaceChart fetchedSprints={sprints} loading={loading} />
             <div className='mt-6' />
+            <StatBarVolume fetchedSprints={sprints} loading={loading} />
+            <div className='mt-20' />
             <PersonalRecords />
         </>
 
