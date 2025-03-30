@@ -26,7 +26,6 @@ export const DistanceFields = ({ onSelectCircuit, onInputDistance, onInputLaps }
         const fetchCircuits = async () => {
             const token = await getAccessToken()
             const res = await getAllCircuits(token)
-            console.log(res);
             if (res.success) {
                 setCircuits(res.data)
             }

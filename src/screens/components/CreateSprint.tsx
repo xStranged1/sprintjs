@@ -64,6 +64,7 @@ export const CreateSprint = ({ closeDialog, onSubmit }: PropsCreateSprint) => {
         console.log("interval createSprint");
         console.log(intervals);
         intervalsRef.current = intervals
+        setHaveEffort(false)
     }
 
     const handleSubmit = async () => {
@@ -91,7 +92,7 @@ export const CreateSprint = ({ closeDialog, onSubmit }: PropsCreateSprint) => {
     }
 
     return (
-        <DialogContent className="w-[310px] sm:w-[520px] md:w-[600px] lg:w-[700px]">
+        <DialogContent className="w-[310px] sm:w-[520px] md:w-[600px] lg:w-[800px]">
             <DialogHeader>
                 <DialogTitle>Crear Sprint</DialogTitle>
                 <DialogDescription>
