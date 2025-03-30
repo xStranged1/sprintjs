@@ -1,6 +1,7 @@
 import { Sprint } from "@/types/Sprint";
 
 export const calculeWeekVolume = (sprints: Sprint[]) => {
+
     const getWeekStart = (date: any) => {
         const d = new Date(date);
         d.setUTCHours(0, 0, 0, 0);
@@ -43,10 +44,8 @@ export const calculeWeekVolume = (sprints: Sprint[]) => {
         kilometers: groupedData[week],
     }));
 
+    chartData.pop()
     chartData.push({ week: currentWeekLabel, kilometers: lastWeekDistance });
 
-    chartData.pop()
-    chartData.pop()
-    chartData[chartData.length - 1].week = currentWeekLabel
     return chartData
 }

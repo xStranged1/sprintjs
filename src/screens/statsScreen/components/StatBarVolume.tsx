@@ -25,14 +25,13 @@ export const StatBarVolume = ({ fetchedSprints, loading }: StatProps) => {
         const last3months = filterDateSprint(fetchedSprints, '90d')
         if (last3months.length > 0) {
             const weekVolume = calculeWeekVolume(last3months)
-
             let sum = 0
-            for (let i = 0; i < weekVolume.length - 1; i++) {
+            for (let i = 0; i < weekVolume.length; i++) {
                 const week = weekVolume[i];
                 sum = sum + Number(week.kilometers)
             }
             const avg = (sum / (weekVolume.length - 1))
-            const kmLastWeek = weekVolume[weekVolume.length - 2].kilometers
+            const kmLastWeek = weekVolume[weekVolume.length - 1].kilometers
             const newLastWeekIncrease = (((kmLastWeek - avg) / avg) * 100).toFixed(2)
             setLastWeekIncrease(Number(newLastWeekIncrease))
             setAvgVolume(avg)
