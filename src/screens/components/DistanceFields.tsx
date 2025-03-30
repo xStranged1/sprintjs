@@ -52,7 +52,7 @@ export const DistanceFields = ({ onSelectCircuit, onInputDistance, onInputLaps }
     return (
         <>
             <DialogHeader className="grid grid-cols-4 items-center mr-5 gap-4">
-                <Label htmlFor="name" className="text-right">
+                <Label htmlFor="name" className="text-right font-medium text-sm">
                     Circuito
                 </Label>
 
@@ -76,7 +76,7 @@ export const DistanceFields = ({ onSelectCircuit, onInputDistance, onInputLaps }
 
             </DialogHeader >
             <DialogHeader className="grid grid-cols-4 items-center mr-5 gap-4">
-                <Label htmlFor="name" className="text-right">
+                <Label htmlFor="name" className="text-right font-medium text-sm">
                     Vueltas
                 </Label>
                 <Input type='text'
@@ -90,7 +90,7 @@ export const DistanceFields = ({ onSelectCircuit, onInputDistance, onInputLaps }
                     }} />
             </DialogHeader>
             <DialogHeader className="grid grid-cols-4 items-center mr-5 gap-4">
-                <Label htmlFor="name" className="text-right">
+                <Label htmlFor="name" className="text-right font-medium text-sm">
                     Distancia total (m)
                 </Label>
                 <Input type='text'

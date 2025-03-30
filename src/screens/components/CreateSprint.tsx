@@ -9,12 +9,13 @@ import { Textarea } from "@/components/ui/textarea"
 import { TimePicker } from "@/components/ui/TimePicker"
 import { useToast } from "@/hooks/use-toast"
 import { createSprint, ResCreateSprint } from "@/services/sprintService"
-import { BaseSprint, Circuit } from "@/types/Sprint"
+import { BaseInterval, BaseSprint, Circuit } from "@/types/Sprint"
 import { getPace, getTotalSeconds } from "@/utils/utils"
 import { useEffect, useRef, useState } from "react"
 import { DistanceFields } from "./DistanceFields"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { useGetAccessToken } from "@/services/api"
+import { CreateIntervals } from "./createIntervals/CreateIntervals"
 
 interface PropsCreateSprint {
     closeDialog: (boolean: boolean) => void,
@@ -38,32 +39,10 @@ export const CreateSprint = ({ closeDialog, onSubmit }: PropsCreateSprint) => {
     const [comment, setComment] = useState('')
     const [effort, setEffort] = useState<number[]>([50])
     const [haveEffort, setHaveEffort] = useState<boolean>(false)
+    const intervalsRef = useRef<BaseInterval[]>([])
 
     const { toast } = useToast()
     const getAccessToken = useGetAccessToken();
-
-    const handleSubmit = async () => {
-        const hours = time?.getHours()
-        const minutes = time?.getMinutes()
-        const seconds = time?.getSeconds()
-        const newSprint: BaseSprint = {
-            date: datetime,
-            distance: Number(distance),
-            time: getTotalSeconds(hours, minutes, seconds),
-            takeBreak,
-            circuit: circuit.current,
-            numberOfLaps: Number(numberOfLaps.current),
-            comment,
-            effort: haveEffort ? effort[0] : undefined,
-            temperature: Number(temperature)
-        }
-        const token = await getAccessToken()
-        const res = await createSprint(newSprint, token)
-        if (!res.success) return toast({ title: 'Hubo un error creando el sprint', description: res.message, variant: 'destructive' })
-        toast({ title: 'Sprint creado con exito!' })
-        closeDialog(false)
-        onSubmit(res.data)
-    }
 
     useEffect(() => {
         const calculatePace = () => {
@@ -81,6 +60,36 @@ export const CreateSprint = ({ closeDialog, onSubmit }: PropsCreateSprint) => {
         calculatePace()
     }, [distance, time])
 
+    const onChangeIntervals = (intervals: BaseInterval[]) => {
+        console.log("interval createSprint");
+        console.log(intervals);
+        intervalsRef.current = intervals
+    }
+
+    const handleSubmit = async () => {
+        const hours = time?.getHours()
+        const minutes = time?.getMinutes()
+        const seconds = time?.getSeconds()
+        const newSprint: BaseSprint = {
+            date: datetime,
+            distance: Number(distance),
+            time: getTotalSeconds(hours, minutes, seconds),
+            takeBreak,
+            circuit: circuit.current,
+            numberOfLaps: Number(numberOfLaps.current),
+            comment,
+            effort: haveEffort ? effort[0] : undefined,
+            temperature: Number(temperature),
+            intervals: intervalsRef.current
+        }
+        const token = await getAccessToken()
+        const res = await createSprint(newSprint, token)
+        if (!res.success) return toast({ title: 'Hubo un error creando el sprint', description: res.message, variant: 'destructive' })
+        toast({ title: 'Sprint creado con exito!' })
+        closeDialog(false)
+        onSubmit(res.data)
+    }
+
     return (
         <DialogContent className="w-[310px] sm:w-[520px] md:w-[600px] lg:w-[700px]">
             <DialogHeader>
@@ -97,7 +106,7 @@ export const CreateSprint = ({ closeDialog, onSubmit }: PropsCreateSprint) => {
                     <DateTimePicker datetime={datetime} setDatetime={(e) => setDatetime(e)} />
                 </DialogHeader>
                 <DialogHeader className="grid grid-cols-4 items-center mr-5 gap-4">
-                    <Label htmlFor="name" className="text-right">
+                    <Label htmlFor="name" className="text-right font-medium text-sm">
                         Tiempo total
                     </Label>
                     <TimePicker date={time} setDate={(e) => setTime(e)} />
@@ -119,14 +128,6 @@ export const CreateSprint = ({ closeDialog, onSubmit }: PropsCreateSprint) => {
                         placeholder="Ritmo en mm:ss/km"
                         className="col-span-3"
                     />
-                </DialogHeader>
-                <DialogHeader className="grid grid-cols-4 items-center mr-5 gap-4">
-                    <Checkbox id="takeBreak" onCheckedChange={() => setTakeBreak(prev => !prev)} checked={takeBreak}
-                        className="justify-self-end"
-                    />
-                    <Label htmlFor="takeBreak" className="text-left col-span-3 cursor-pointer ml-1">
-                        Tomó descansos?
-                    </Label>
                 </DialogHeader>
                 <DialogHeader className="grid grid-cols-4 items-center mr-5 gap-4">
                     <Label htmlFor="name" className="text-right">
@@ -161,6 +162,23 @@ export const CreateSprint = ({ closeDialog, onSubmit }: PropsCreateSprint) => {
                         </Tooltip>
                     </TooltipProvider>
                 </DialogHeader>
+                <DialogHeader className="grid grid-cols-4 items-center mr-5 gap-4 mt-10">
+                    <Checkbox id="takeBreak" onCheckedChange={() => setTakeBreak(prev => !prev)} checked={takeBreak}
+                        className="justify-self-end"
+                    />
+                    <Label htmlFor="takeBreak" className="text-left col-span-3 cursor-pointer ml-1">
+                        Tomó descansos?
+                    </Label>
+                </DialogHeader>
+
+                {takeBreak && (
+                    <>
+                        <h2 className="self-center mt-8 font-bold">Intervalos</h2>
+                        <div className="border-b border-border" />
+                        <CreateIntervals selectedCircuit={circuit.current} onChangeIntervals={onChangeIntervals} />
+                    </>
+                )}
+
                 <DialogHeader className="mt-8 flex flex-row justify-between items-center mr-5 gap-4">
                     <Label htmlFor="name" className="text-right">
                         Comentario

@@ -7,7 +7,8 @@ export interface BaseSprint {
     temperature?: number,
     comment?: string,
     takeBreak: boolean,
-    effort?: number
+    effort?: number,
+    intervals?: BaseInterval[]
 }
 
 export interface Sprint extends BaseSprint {
@@ -36,4 +37,22 @@ export interface Filter {
     distanceRange?: DoubleRange
     takeBreak?: boolean,
     effortRange?: DoubleRange
+}
+
+export interface BaseInterval {
+    distance: number,
+    time: number,
+    startWithRest?: boolean
+    timeRest: number
+    pace?: number
+    numberOfRep: number
+    order: number
+    effort?: number
+}
+export const initialBaseInterval: BaseInterval = {
+    distance: 0,
+    numberOfRep: 0,
+    order: 0,
+    time: 0,
+    timeRest: 0,
 }
