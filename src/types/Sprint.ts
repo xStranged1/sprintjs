@@ -42,11 +42,12 @@ export interface Filter {
 export interface BaseInterval {
     distance: number,
     time: number,
-    startWithRest?: boolean
-    timeRest: number
-    pace?: number
-    numberOfRep: number
-    order: number
+    startWithRest?: boolean,
+    timeRest: number,
+    pace?: number,
+    numberOfRep: number,
+    numberOfLaps?: number,
+    order: number,
     effort?: number
 }
 export const initialBaseInterval: BaseInterval = {

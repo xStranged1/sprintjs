@@ -10,7 +10,25 @@ export interface ResCreateSprint {
 }
 
 export const createSprint = async (sprint: BaseSprint, token?: string): Promise<ApiResponse<ResCreateSprint>> => {
-    const response = await apiRequest<ResCreateSprint>('/sprint', 'POST', token, sprint)
+    const newSprint = structuredClone(sprint)
+    if (sprint.intervals && sprint.takeBreak) {
+        if (sprint.intervals.length > 0) {
+            let totalD = 0
+            let totalTime = 0
+            let totalLaps = 0
+            for (const interval of sprint.intervals) {
+                totalD = totalD + interval.distance
+                totalTime = totalTime + interval.time
+                if (interval.numberOfLaps) totalLaps = totalLaps + interval.numberOfLaps
+            }
+            newSprint.distance = totalD
+            newSprint.time = totalTime
+            if (totalLaps) newSprint.numberOfLaps = totalLaps
+        }
+    }
+    // console.log("newSprint");
+    // console.log(newSprint);
+    const response = await apiRequest<ResCreateSprint>('/sprint', 'POST', token, newSprint)
     return response
 }
 
