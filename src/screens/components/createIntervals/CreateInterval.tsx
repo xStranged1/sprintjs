@@ -44,7 +44,11 @@ export const CreateInterval = ({ selectedCircuit, interval, onChangeInterval, on
         const calculatePace = () => {
             if (!distance) return
             if (!time) return
-            const distanceFloat = parseFloat(distance)
+            let numberOfRepINT = 1
+            if (!isNaN(Number(numberOfRep))) {
+                numberOfRepINT = Number(numberOfRep)
+            }
+            const distanceFloat = parseFloat(distance) * numberOfRepINT
             if (typeof distanceFloat != 'number') return
             if (distanceFloat == 0) return
             const hours = time?.getHours()
@@ -57,12 +61,13 @@ export const CreateInterval = ({ selectedCircuit, interval, onChangeInterval, on
             intervalRef.current = {
                 ...intervalRef.current,
                 distance: distanceFloat,
-                time: totalSeconds
+                time: totalSeconds,
+                numberOfRep: numberOfRepINT
             }
             onChangeInterval(intervalRef.current)
         }
         calculatePace()
-    }, [distance, time])
+    }, [distance, time, numberOfRep])
 
     const handleDeleteInterval = () => {
         onDeleteInterval(intervalRef.current)
@@ -98,7 +103,14 @@ export const CreateInterval = ({ selectedCircuit, interval, onChangeInterval, on
                             value={laps}
                             onChange={(e) => {
                                 const value = e.target.value
-                                setLaps(value)
+                                if (!isNaN(Number(value))) {
+                                    intervalRef.current = {
+                                        ...intervalRef.current,
+                                        numberOfLaps: Number(value)
+                                    }
+                                    onChangeInterval(intervalRef.current)
+                                    setLaps(value)
+                                }
                             }} />
                     </DialogHeader>
                     <DialogHeader className="grid grid-cols-4 items-center mr-5 gap-4">
@@ -106,7 +118,7 @@ export const CreateInterval = ({ selectedCircuit, interval, onChangeInterval, on
                             Distancia parcial (m)
                         </Label>
                         <Input type='text'
-                            value={distance}
+                            value={intervalRef.current.distance ?? ''}
                             className="col-span-3"
                             placeholder="Distancia en metros"
                             onChange={(e) => {

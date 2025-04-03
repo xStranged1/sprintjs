@@ -66,13 +66,13 @@ export const CreateIntervals = ({ selectedCircuit, onChangeIntervals }: Params) 
                 <Plus className="h-8 w-8" />
                 Agregar intervalo
             </Button>
-            <Button variant='outline' onClick={() => {
+            {/* <Button variant='outline' onClick={() => {
                 console.log(intervalsRef.current)
                 console.log(intervals)
             }}>
                 <Plus className="h-8 w-8" />
                 ver intervals
-            </Button>
+            </Button> */}
         </>
     )
 }
