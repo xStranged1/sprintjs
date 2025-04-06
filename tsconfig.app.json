@@ -27,5 +27,5 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["src", "src/screens/statsScreen/.tsx"]
+  "include": ["src", "src/screens/statsScreen/.tsx", "src/screens/.tsx"]
 }

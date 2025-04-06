@@ -11,6 +11,7 @@ import { FilterBar } from './components/FilterBar'
 import { IPersonalRecord } from '@/types/Stat'
 import { AnimationConfetti } from '@/core/AnimationConffetti'
 import { useGetAccessToken } from '@/services/api'
+import { Link } from 'wouter'
 
 export const HomeScreen = () => {
 
@@ -95,7 +96,9 @@ export const HomeScreen = () => {
             {loading && (<h2>Loading...</h2>)}
             {orderedSprints.length > 0 && (
                 sprints.map((sprint, i) => (
-                    <CardSprint sprint={sprint} key={i} />
+                    <Link href={`/sprintjs/${sprint.id}`} >
+                        <CardSprint sprint={sprint} key={i} />
+                    </Link>
                 ))
             )}
 

@@ -7,6 +7,7 @@ import { Toaster } from './components/ui/toaster';
 import { PaceScreen } from './screens/PaceScreen';
 import { Footer } from './core/Footer';
 import { LoginScreen } from './screens/LoginScreen';
+import { DetailSprintScreen } from './screens/DetailSprintScreen';
 
 function App() {
 
@@ -25,8 +26,8 @@ function App() {
         <Route path="/sprintjs" component={HomeScreen} />
         <Route path="/sprintjs/stats" component={StatsScreen} />
         <Route path="/sprintjs/calculate-pace" component={PaceScreen} />
-        <Route path="/sprintjs/users/:name">
-          {(params) => <>Hello, {params.name}!</>}
+        <Route path="/sprintjs/:sprintId" component={DetailSprintScreen}>
+          {(params) => <>Hello, {params.sprintId}!</>}
         </Route>
 
         {/* Default route in a switch */}

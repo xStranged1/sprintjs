@@ -37,6 +37,11 @@ export const getAllSprints = async (token?: string): Promise<ApiResponse<Sprint[
     return response
 }
 
+export const getSprintById = async (sprintId: string, token?: string): Promise<ApiResponse<Sprint>> => {
+    const response = await apiRequest<Sprint>(`/sprint/${sprintId}`, "GET", token);
+    return response
+}
+
 export const orderByDate = (sprints: Sprint[]): Sprint[] => {
     return sprints.sort((a, b) => {
         const dateA = new Date(a.date)
