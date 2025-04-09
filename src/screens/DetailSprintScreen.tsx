@@ -3,9 +3,9 @@ import '../App.css'
 import { getSprintById } from '@/services/sprintService'
 import { useToast } from '@/hooks/use-toast'
 import { Sprint } from '@/types/Sprint'
-import { CardSprint } from '@/core/CardSprint'
 import { useGetAccessToken } from '@/services/api'
 import { useParams } from 'wouter'
+import { CardDetailSprint } from '@/core/CardDetailSprint'
 
 export const DetailSprintScreen = () => {
 
@@ -33,7 +33,7 @@ export const DetailSprintScreen = () => {
     return (
         <div>
             {loading && (<h2>Loading...</h2>)}
-            {sprint && <CardSprint sprint={sprint} />}
+            {sprint && <CardDetailSprint sprint={sprint} />}
         </div>
     )
 }
