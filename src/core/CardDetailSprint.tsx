@@ -22,13 +22,20 @@ export const CardDetailSprint = ({ sprint, trophy }: { sprint: Sprint, trophy?: 
 
     const Intervals = ({ intervals }: { intervals: BaseInterval[] }) => {
 
+        if (intervals.length == 0) return
+
         return (
-            <div>
-                <h2 className="font-bold mb-2">Intervalos</h2>
-                {intervals.map((interval) => (
-                    <CardInterval interval={interval} />
-                ))}
-            </div>
+            <CardContent className="items-center gap-6">
+                <div>
+                    <h2 className="font-bold mb-2">Intervalos</h2>
+                    <div className="flex flex-col gap-4">
+                        {intervals.map((interval) => (
+                            <CardInterval key={interval.order.toString()}
+                                interval={interval} />
+                        ))}
+                    </div>
+                </div>
+            </CardContent>
         )
     }
 
@@ -38,7 +45,7 @@ export const CardDetailSprint = ({ sprint, trophy }: { sprint: Sprint, trophy?: 
                 <CardHeader>
                     <div className="flex flex-row justify-between gap-2">
                         {trophy && (<Trophy color={trophyColor[trophy]} className="drop-shadow" size={32} />)}
-                        <CardTitle>Distancia: {sprint.distance}m</CardTitle>
+                        <CardTitle>Distancia total: {sprint.distance}m</CardTitle>
                         {sprint.takeBreak && (
                             <CardContent className="flex items-center gap-6">
                                 <div className="flex items-center gap-2">
@@ -91,9 +98,7 @@ export const CardDetailSprint = ({ sprint, trophy }: { sprint: Sprint, trophy?: 
                 </CardContent>
 
                 {sprint.intervals && (
-                    <CardContent className="items-center gap-6">
-                        <Intervals intervals={sprint.intervals} />
-                    </CardContent>
+                    <Intervals intervals={sprint.intervals} />
                 )}
 
                 {sprint.comment && (

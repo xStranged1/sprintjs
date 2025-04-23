@@ -10,20 +10,20 @@ export const trophyColor = {
 
 export const CardInterval = ({ interval }: { interval: BaseInterval, trophy?: 'gold' | 'silver' | 'bronze' }) => {
 
-    const textDistance = Math.round(interval.distance / 3).toString()
-    const textTime = formatTime(Math.round(interval.distance / 3))
+    const textDistance = Math.round(interval.distance).toString()
+    const textTime = formatTime(Math.round(interval.time))
     const textPace = interval.pace ? formatTime(interval.pace) : ''
     const textTimeRest = formatTime(Math.round(interval.timeRest))
 
     return (
         <div
-            className="flex flex-col gap-2"
+            className="flex flex-col gap-1"
             key={interval.order.toString()}
         >
             <div className="flex flex-row items-center gap-4">
                 <div className="flex items-center gap-2">
                     <Ruler size={18} />
-                    <p>Distancia: <strong>{textDistance}m X {interval.numberOfRep}</strong></p>
+                    <p>Distancia: <strong>{textDistance}m</strong></p>
                 </div>
                 <div className="flex items-center gap-2">
                     <Timer />
