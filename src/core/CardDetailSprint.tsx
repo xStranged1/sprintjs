@@ -7,6 +7,12 @@ import { formatTime } from "@/utils/utils";
 import { format } from "date-fns";
 import { Bed, Map, Timer, Trophy, Watch } from "lucide-react";
 import { CardInterval } from "./CardInterval";
+import { Button } from "@/components/ui/button";
+import { deleteSprintById } from "@/services/sprintService";
+import { useGetAccessToken } from "@/services/api";
+import { useToast } from "@/hooks/use-toast";
+import { useLocation } from "wouter";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 export const trophyColor = {
     'gold': "#f4bf1f",
@@ -19,6 +25,9 @@ export const CardDetailSprint = ({ sprint, trophy }: { sprint: Sprint, trophy?: 
     const textDate = format(sprint.date, 'dd/MM/yyyy');
     const textTime = formatTime(sprint.time)
     const textPace = formatTime(sprint.pace)
+    const getAccessToken = useGetAccessToken();
+    const [, navigate] = useLocation();
+    const { toast } = useToast()
 
     const Intervals = ({ intervals }: { intervals: BaseInterval[] }) => {
 
@@ -39,6 +48,14 @@ export const CardDetailSprint = ({ sprint, trophy }: { sprint: Sprint, trophy?: 
         )
     }
 
+    const handleDelete = async () => {
+        const token = await getAccessToken()
+        const res = await deleteSprintById(sprint.id.toString(), token)
+        if (!res.success) return toast({ title: 'Hubo un error eliminando el sprint', description: res.message, variant: 'destructive' })
+        navigate('/sprintjs/', { replace: true })
+        return toast({ title: `Se ha eliminado el sprint ${sprint.id} con éxito`, description: res.message })
+    }
+
     return (
         <div className="my-4">
             <Card className="min-w-[450px] w-fit relative">
@@ -46,20 +63,27 @@ export const CardDetailSprint = ({ sprint, trophy }: { sprint: Sprint, trophy?: 
                     <div className="flex flex-row justify-between gap-2">
                         {trophy && (<Trophy color={trophyColor[trophy]} className="drop-shadow" size={32} />)}
                         <CardTitle>Distancia total: {sprint.distance}m</CardTitle>
-                        {sprint.takeBreak && (
-                            <CardContent className="flex items-center gap-6">
-                                <div className="flex items-center gap-2">
-                                    <Bed />
-                                    <p className="font-semibold text-sm">Con descanso</p>
-                                </div>
-                            </CardContent>
-                        )}
-                        {!sprint.takeBreak && (<>
-                            <div className="flex items-center gap-2">
-                                <BedTicket />
-                                <p className="font-semibold text-sm">Sin descanso</p>
-                            </div>
-                        </>)}
+                        <Dialog>
+                            <DialogTrigger asChild>
+                                <Button variant={'destructive'}>Eliminar</Button>
+                            </DialogTrigger>
+                            <DialogContent className="w-[310px] sm:w-[520px] md:w-[600px] lg:w-[800px]">
+                                <DialogHeader>
+                                    <DialogTitle>Esta seguro que quiere eliminar este sprint?</DialogTitle>
+                                    <DialogDescription>
+                                        El sprint, sus posibles intervalos y records personales serán eliminados permanentemente
+                                    </DialogDescription>
+                                </DialogHeader>
+                                <DialogFooter>
+                                    <DialogClose asChild>
+                                        <Button type="button" variant="secondary">
+                                            Cancelar
+                                        </Button>
+                                    </DialogClose>
+                                    <Button type="submit" variant="destructive" onClick={handleDelete}>Eliminar</Button>
+                                </DialogFooter>
+                            </DialogContent>
+                        </Dialog>
                     </div>
                     <CardDescription>{textDate}</CardDescription>
                 </CardHeader>
@@ -88,11 +112,22 @@ export const CardDetailSprint = ({ sprint, trophy }: { sprint: Sprint, trophy?: 
                             step={1}
                         />
                     </>)}
-
                     {sprint.temperature && (<>
                         <div className="flex items-center gap-2">
                             <IconTempStyled temperature={sprint.temperature} />
                             <p className="font-bold text-sm flex">Temperatura: <strong className="ml-2">{sprint.temperature}°C</strong></p>
+                        </div>
+                    </>)}
+                    {sprint.takeBreak && (
+                        <div className="flex items-center gap-2">
+                            <Bed />
+                            <p className="font-semibold text-sm">Con descanso</p>
+                        </div>
+                    )}
+                    {!sprint.takeBreak && (<>
+                        <div className="flex items-center gap-2">
+                            <BedTicket />
+                            <p className="font-semibold text-sm">Sin descanso</p>
                         </div>
                     </>)}
                 </CardContent>
@@ -110,7 +145,6 @@ export const CardDetailSprint = ({ sprint, trophy }: { sprint: Sprint, trophy?: 
 
             </Card>
         </div>
-
 
     )
 }

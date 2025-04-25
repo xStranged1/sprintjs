@@ -42,6 +42,11 @@ export const getSprintById = async (sprintId: string, token?: string): Promise<A
     return response
 }
 
+export const deleteSprintById = async (sprintId: string, token?: string): Promise<ApiResponse<Boolean>> => {
+    const response = await apiRequest<Boolean>(`/sprint/${sprintId}`, "DELETE", token);
+    return response
+}
+
 export const orderByDate = (sprints: Sprint[]): Sprint[] => {
     return sprints.sort((a, b) => {
         const dateA = new Date(a.date)

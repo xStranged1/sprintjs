@@ -80,7 +80,7 @@ export const CreateSprint = ({ closeDialog, onSubmit }: PropsCreateSprint) => {
             numberOfLaps: Number(numberOfLaps.current),
             comment,
             effort: haveEffort ? effort[0] : undefined,
-            temperature: Number(temperature),
+            temperature: temperature ? Number(temperature) : undefined,
             intervals: intervalsRef.current
         }
         const token = await getAccessToken()
