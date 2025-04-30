@@ -27,10 +27,15 @@ export const CreateInterval = ({ selectedCircuit, interval, onChangeInterval, on
     const [pace, setPace] = useState('')
     const [effort, setEffort] = useState<number[]>([50])
     const [timeRest, setTimeRest] = useState('')
-    const [numberOfRep, setNumberOfRep] = useState('')
+    const [numberOfRep, setNumberOfRep] = useState('1')
     const [isIntervalDeleted, setIsIntervalDeleted] = useState(false)
 
     const intervalRef = useRef<BaseInterval>({ ...initialBaseInterval, order: interval.order })
+    const inputLapRef = useRef(null);
+    const inputDistanceRef = useRef(null);
+    const inputTimeRestRef = useRef(null);
+    const inputNumberOfRepRef = useRef(null);
+
     useEffect(() => {
         if (!selectedCircuit) return
         if (isNaN(Number(laps))) return
@@ -75,6 +80,14 @@ export const CreateInterval = ({ selectedCircuit, interval, onChangeInterval, on
     }
 
     if (isIntervalDeleted) return
+
+    const handleKeyDown = (e: any, nextInputRef: any) => {
+        if (e.key === 'Enter') {
+            e.preventDefault(); // Evitar el comportamiento por defecto de Enter (enviar formulario)
+            nextInputRef.current.focus(); // Cambiar el foco al siguiente input
+        }
+    };
+
     return (
         <>
             <Card className="pb-7 mr-4">
@@ -101,6 +114,8 @@ export const CreateInterval = ({ selectedCircuit, interval, onChangeInterval, on
                             className="col-span-3"
                             placeholder="Cantidad de vueltas al circuito"
                             value={laps}
+                            ref={inputLapRef}
+                            onKeyDown={(e) => handleKeyDown(e, inputDistanceRef)}
                             onChange={(e) => {
                                 const value = e.target.value
                                 if (!isNaN(Number(value))) {
@@ -119,6 +134,8 @@ export const CreateInterval = ({ selectedCircuit, interval, onChangeInterval, on
                         </Label>
                         <Input type='text'
                             value={intervalRef.current.distance ?? ''}
+                            ref={inputDistanceRef}
+                            onKeyDown={(e) => handleKeyDown(e, inputNumberOfRepRef)}
                             className="col-span-3"
                             placeholder="Distancia en metros"
                             onChange={(e) => {
@@ -135,6 +152,8 @@ export const CreateInterval = ({ selectedCircuit, interval, onChangeInterval, on
                             value={numberOfRep}
                             className="col-span-3"
                             placeholder="Numero de repeticiones"
+                            ref={inputNumberOfRepRef}
+                            onKeyDown={(e) => handleKeyDown(e, inputTimeRestRef)}
                             onChange={(e) => {
                                 const value = e.target.value
                                 setNumberOfRep(value)
@@ -166,6 +185,7 @@ export const CreateInterval = ({ selectedCircuit, interval, onChangeInterval, on
                             value={timeRest}
                             className="col-span-3"
                             placeholder="Tiempo en segundos"
+                            ref={inputTimeRestRef}
                             onChange={(e) => {
                                 const value = e.target.value
                                 setTimeRest(value)
