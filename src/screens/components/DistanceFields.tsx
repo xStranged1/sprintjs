@@ -12,15 +12,31 @@ interface Params {
     onInputDistance: (value: string) => void,
     onSelectCircuit: (value: Circuit) => void,
     onInputLaps: (value: string) => void,
+    initialCircuit?: Circuit,
+    initialDistance?: string,
+    initialLaps?: string,
 }
 
-export const DistanceFields = ({ onSelectCircuit, onInputDistance, onInputLaps }: Params) => {
+export const DistanceFields = ({ onSelectCircuit, onInputDistance, onInputLaps, initialCircuit, initialDistance, initialLaps }: Params) => {
 
-    const [distance, setDistance] = useState('')
-    const [selectedCircuit, setSelectedCircuit] = useState<Circuit | undefined>()
-    const [laps, setLaps] = useState('')
+    const [distance, setDistance] = useState(initialDistance || '')
+    const [selectedCircuit, setSelectedCircuit] = useState<Circuit | undefined>(initialCircuit)
+    const [laps, setLaps] = useState(initialLaps || '')
     const [circuits, setCircuits] = useState<Circuit[]>([])
     const getAccessToken = useGetAccessToken();
+
+    useEffect(() => {
+        if (initialCircuit) {
+            onSelectCircuit(initialCircuit)
+        }
+        if (initialDistance) {
+            onInputDistance(initialDistance)
+        }
+        if (initialLaps) {
+            onInputLaps(initialLaps)
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
 
     useEffect(() => {
         const fetchCircuits = async () => {
@@ -56,7 +72,7 @@ export const DistanceFields = ({ onSelectCircuit, onInputDistance, onInputLaps }
                 </Label>
 
 
-                <Select onValueChange={(value) => handleOnSelectCircuit(JSON.parse(value))}>
+                <Select onValueChange={(value) => handleOnSelectCircuit(JSON.parse(value))} value={selectedCircuit ? JSON.stringify(selectedCircuit) : undefined}>
                     <SelectTrigger className="w-[180px]">
                         <SelectValue placeholder="Selecciona un circuito" />
                     </SelectTrigger>

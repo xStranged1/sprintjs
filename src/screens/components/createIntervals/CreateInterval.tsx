@@ -4,7 +4,7 @@ import { BaseInterval, Circuit, initialBaseInterval } from "@/types/Sprint"
 import { Label } from "@radix-ui/react-label"
 import { useEffect, useRef, useState } from "react"
 import { TimePicker } from "@/components/ui/TimePicker"
-import { getPace, getTotalSeconds } from "@/utils/utils"
+import { getPace, getTotalSeconds, secondsToDate } from "@/utils/utils"
 import { Card, CardHeader } from "@/components/ui/card"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { Slider } from "@/components/ui/slider"
@@ -21,16 +21,16 @@ interface Params {
 
 export const CreateInterval = ({ selectedCircuit, interval, onChangeInterval, onDeleteInterval, index }: Params) => {
 
-    const [time, setTime] = useState<Date | undefined>(undefined)
-    const [distance, setDistance] = useState('')
-    const [laps, setLaps] = useState('')
+    const [time, setTime] = useState<Date | undefined>(interval.time ? secondsToDate(interval.time) : undefined)
+    const [distance, setDistance] = useState(interval.distance ? interval.distance.toString() : '')
+    const [laps, setLaps] = useState(interval.numberOfLaps ? interval.numberOfLaps.toString() : '')
     const [pace, setPace] = useState('')
-    const [effort, setEffort] = useState<number[]>([50])
-    const [timeRest, setTimeRest] = useState('')
-    const [numberOfRep, setNumberOfRep] = useState('1')
+    const [effort, setEffort] = useState<number[]>([interval.effort || 50])
+    const [timeRest, setTimeRest] = useState(interval.timeRest ? interval.timeRest.toString() : '')
+    const [numberOfRep, setNumberOfRep] = useState(interval.numberOfRep ? interval.numberOfRep.toString() : '1')
     const [isIntervalDeleted, setIsIntervalDeleted] = useState(false)
 
-    const intervalRef = useRef<BaseInterval>({ ...initialBaseInterval, order: interval.order })
+    const intervalRef = useRef<BaseInterval>({ ...initialBaseInterval, ...interval, order: interval.order })
     const inputLapRef = useRef(null);
     const inputDistanceRef = useRef(null);
     const inputTimeRestRef = useRef(null);
@@ -72,7 +72,19 @@ export const CreateInterval = ({ selectedCircuit, interval, onChangeInterval, on
             onChangeInterval(intervalRef.current)
         }
         calculatePace()
-    }, [distance, time, numberOfRep])
+    }, [distance, time, numberOfRep, onChangeInterval])
+
+    // Initialize intervalRef with interval data on mount
+    useEffect(() => {
+        if (interval.distance && interval.time) {
+            intervalRef.current = {
+                ...intervalRef.current,
+                ...interval
+            }
+            onChangeInterval(intervalRef.current)
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
 
     const handleDeleteInterval = () => {
         onDeleteInterval(intervalRef.current)
@@ -81,10 +93,10 @@ export const CreateInterval = ({ selectedCircuit, interval, onChangeInterval, on
 
     if (isIntervalDeleted) return
 
-    const handleKeyDown = (e: any, nextInputRef: any) => {
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, nextInputRef: React.RefObject<HTMLInputElement>) => {
         if (e.key === 'Enter') {
             e.preventDefault(); // Evitar el comportamiento por defecto de Enter (enviar formulario)
-            nextInputRef.current.focus(); // Cambiar el foco al siguiente input
+            nextInputRef.current?.focus(); // Cambiar el foco al siguiente input
         }
     };
 
@@ -133,7 +145,7 @@ export const CreateInterval = ({ selectedCircuit, interval, onChangeInterval, on
                             Distancia parcial (m)
                         </Label>
                         <Input type='text'
-                            value={intervalRef.current.distance ?? ''}
+                            value={distance}
                             ref={inputDistanceRef}
                             onKeyDown={(e) => handleKeyDown(e, inputNumberOfRepRef)}
                             className="col-span-3"

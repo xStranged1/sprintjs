@@ -13,6 +13,10 @@ import { useGetAccessToken } from "@/services/api";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { CreateSprint } from "@/screens/components/CreateSprint";
+import { useSprintStore } from "@/store/sprintStore";
+import { ResCreateSprint } from "@/services/sprintService";
+import { useState } from "react";
 
 export const trophyColor = {
     'gold': "#f4bf1f",
@@ -28,6 +32,8 @@ export const CardDetailSprint = ({ sprint, trophy }: { sprint: Sprint, trophy?: 
     const getAccessToken = useGetAccessToken();
     const [, navigate] = useLocation();
     const { toast } = useToast()
+    const { setSprintToEdit, clearSprintToEdit } = useSprintStore()
+    const [openEditDialog, setOpenEditDialog] = useState(false)
 
     const Intervals = ({ intervals }: { intervals: BaseInterval[] }) => {
 
@@ -56,6 +62,19 @@ export const CardDetailSprint = ({ sprint, trophy }: { sprint: Sprint, trophy?: 
         return toast({ title: `Se ha eliminado el sprint ${sprint.id} con éxito`, description: res.message })
     }
 
+    const handleEdit = () => {
+        setSprintToEdit(sprint)
+        setOpenEditDialog(true)
+    }
+
+    const handleEditSubmit = (_data: ResCreateSprint) => {
+        // Actualizar el sprint localmente si es necesario
+        clearSprintToEdit()
+        setOpenEditDialog(false)
+        // Recargar la página o actualizar el sprint
+        window.location.reload()
+    }
+
     return (
         <div className="my-4">
             <Card className="min-w-[450px] w-fit relative">
@@ -63,27 +82,45 @@ export const CardDetailSprint = ({ sprint, trophy }: { sprint: Sprint, trophy?: 
                     <div className="flex flex-row justify-between gap-2">
                         {trophy && (<Trophy color={trophyColor[trophy]} className="drop-shadow" size={32} />)}
                         <CardTitle>Distancia total: {sprint.distance}m</CardTitle>
-                        <Dialog>
-                            <DialogTrigger asChild>
-                                <Button variant={'destructive'}>Eliminar</Button>
-                            </DialogTrigger>
-                            <DialogContent className="w-[310px] sm:w-[520px] md:w-[600px] lg:w-[800px]">
-                                <DialogHeader>
-                                    <DialogTitle>Esta seguro que quiere eliminar este sprint?</DialogTitle>
-                                    <DialogDescription>
-                                        El sprint, sus posibles intervalos y records personales serán eliminados permanentemente
-                                    </DialogDescription>
-                                </DialogHeader>
-                                <DialogFooter>
-                                    <DialogClose asChild>
-                                        <Button type="button" variant="secondary">
-                                            Cancelar
-                                        </Button>
-                                    </DialogClose>
-                                    <Button type="submit" variant="destructive" onClick={handleDelete}>Eliminar</Button>
-                                </DialogFooter>
-                            </DialogContent>
-                        </Dialog>
+                        <div className="flex gap-2">
+                            <Dialog open={openEditDialog} onOpenChange={(open) => {
+                                setOpenEditDialog(open)
+                                if (!open) {
+                                    clearSprintToEdit()
+                                }
+                            }}>
+                                <DialogTrigger asChild>
+                                    <Button variant={'outline'} onClick={handleEdit}>Editar</Button>
+                                </DialogTrigger>
+                                <CreateSprint closeDialog={(open) => {
+                                    setOpenEditDialog(open)
+                                    if (!open) {
+                                        clearSprintToEdit()
+                                    }
+                                }} onSubmit={handleEditSubmit} sprintToEdit={sprint} />
+                            </Dialog>
+                            <Dialog>
+                                <DialogTrigger asChild>
+                                    <Button variant={'destructive'}>Eliminar</Button>
+                                </DialogTrigger>
+                                <DialogContent className="w-[310px] sm:w-[520px] md:w-[600px] lg:w-[800px]">
+                                    <DialogHeader>
+                                        <DialogTitle>Esta seguro que quiere eliminar este sprint?</DialogTitle>
+                                        <DialogDescription>
+                                            El sprint, sus posibles intervalos y records personales serán eliminados permanentemente
+                                        </DialogDescription>
+                                    </DialogHeader>
+                                    <DialogFooter>
+                                        <DialogClose asChild>
+                                            <Button type="button" variant="secondary">
+                                                Cancelar
+                                            </Button>
+                                        </DialogClose>
+                                        <Button type="submit" variant="destructive" onClick={handleDelete}>Eliminar</Button>
+                                    </DialogFooter>
+                                </DialogContent>
+                            </Dialog>
+                        </div>
                     </div>
                     <CardDescription>{textDate}</CardDescription>
                 </CardHeader>

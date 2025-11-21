@@ -7,20 +7,22 @@ import { CreateInterval } from "./CreateInterval"
 interface Params {
     selectedCircuit: Circuit | undefined,
     onChangeIntervals: (intervals: BaseInterval[]) => void,
+    initialIntervals?: BaseInterval[],
 }
 
-export const CreateIntervals = ({ selectedCircuit, onChangeIntervals }: Params) => {
+export const CreateIntervals = ({ selectedCircuit, onChangeIntervals, initialIntervals }: Params) => {
 
-    const [intervals, setIntervals] = useState<BaseInterval[]>([initialBaseInterval])
-    const intervalsRef = useRef<BaseInterval[]>([])
+    const [intervals, setIntervals] = useState<BaseInterval[]>(initialIntervals && initialIntervals.length > 0 ? initialIntervals : [initialBaseInterval])
+    const intervalsRef = useRef<BaseInterval[]>(initialIntervals || [])
 
     const handleAddInterval = () => {
         let newInterval = initialBaseInterval
         const orders = intervals.map(interval => interval.order)
-        const maxOrder = Math.max(...orders)
+        const maxOrder = orders.length > 0 ? Math.max(...orders) : 0
         newInterval = { ...newInterval, order: maxOrder + 1 }
-        setIntervals([...intervals, newInterval])
-        onChangeIntervals([...intervals, newInterval])
+        const newIntervals = [...intervals, newInterval]
+        setIntervals(newIntervals)
+        onChangeIntervals(newIntervals)
     }
 
     const onChangeInterval = (interval: BaseInterval) => {

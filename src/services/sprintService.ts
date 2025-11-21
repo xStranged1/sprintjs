@@ -42,8 +42,29 @@ export const getSprintById = async (sprintId: string, token?: string): Promise<A
     return response
 }
 
-export const deleteSprintById = async (sprintId: string, token?: string): Promise<ApiResponse<Boolean>> => {
-    const response = await apiRequest<Boolean>(`/sprint/${sprintId}`, "DELETE", token);
+export const deleteSprintById = async (sprintId: string, token?: string): Promise<ApiResponse<boolean>> => {
+    const response = await apiRequest<boolean>(`/sprint/${sprintId}`, "DELETE", token);
+    return response
+}
+
+export const updateSprint = async (sprintId: string, sprint: BaseSprint, token?: string): Promise<ApiResponse<Sprint>> => {
+    const updatedSprint = structuredClone(sprint)
+    if (sprint.intervals && sprint.takeBreak) {
+        if (sprint.intervals.length > 0) {
+            let totalD = 0
+            let totalTime = 0
+            let totalLaps = 0
+            for (const interval of sprint.intervals) {
+                totalD = totalD + interval.distance
+                totalTime = totalTime + interval.time
+                if (interval.numberOfLaps) totalLaps = totalLaps + interval.numberOfLaps
+            }
+            updatedSprint.distance = totalD
+            updatedSprint.time = totalTime
+            if (totalLaps) updatedSprint.numberOfLaps = totalLaps
+        }
+    }
+    const response = await apiRequest<Sprint>(`/sprint/${sprintId}`, 'PATCH', token, updatedSprint)
     return response
 }
 
@@ -61,8 +82,8 @@ export const completeDates = (sprints: Sprint[]) => {
     const resultado = [];
     const fechas = sprints.map(sprint => new Date(sprint.date));
 
-    const fechaInicio = new Date(Math.min(...fechas as any));
-    const fechaFin = new Date(Math.max(...fechas as any));
+    const fechaInicio = new Date(Math.min(...fechas.map(f => f.getTime())));
+    const fechaFin = new Date(Math.max(...fechas.map(f => f.getTime())));
 
     // Iterar sobre el rango de fechas
     for (let d = fechaInicio; d <= fechaFin; d.setDate(d.getDate() + 1)) {
@@ -87,16 +108,16 @@ export const filterSprints = (sprints: Sprint[], filter: Filter): Sprint[] => {
 
     if (filter.distanceRange != undefined) {
         if (filter.distanceRange.min || filter.distanceRange.max) {
-            let min = filter.distanceRange.min ?? 0
-            let max = filter.distanceRange.max ?? Infinity
+            const min = filter.distanceRange.min ?? 0
+            const max = filter.distanceRange.max ?? Infinity
             filteredSprints = filteredSprints.filter(sprint => (sprint.distance > min && sprint.distance < max))
         }
     }
 
     if (filter.effortRange != undefined) {
         if (filter.effortRange.min || filter.effortRange.max) {
-            let min = filter.effortRange.min ?? 0
-            let max = filter.effortRange.max ?? 100
+            const min = filter.effortRange.min ?? 0
+            const max = filter.effortRange.max ?? 100
             filteredSprints = filteredSprints.filter(sprint => {
                 if (!sprint.effort) return
                 if (sprint.effort > min && sprint.effort < max) {

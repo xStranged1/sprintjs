@@ -8,38 +8,43 @@ import { Slider } from "@/components/ui/slider"
 import { Textarea } from "@/components/ui/textarea"
 import { TimePicker } from "@/components/ui/TimePicker"
 import { useToast } from "@/hooks/use-toast"
-import { createSprint, ResCreateSprint } from "@/services/sprintService"
-import { BaseInterval, BaseSprint, Circuit } from "@/types/Sprint"
-import { getPace, getTotalSeconds } from "@/utils/utils"
+import { createSprint, ResCreateSprint, updateSprint } from "@/services/sprintService"
+import { BaseInterval, BaseSprint, Circuit, Sprint } from "@/types/Sprint"
+import { getPace, getTotalSeconds, secondsToDate } from "@/utils/utils"
 import { useEffect, useRef, useState } from "react"
 import { DistanceFields } from "./DistanceFields"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { useGetAccessToken } from "@/services/api"
 import { CreateIntervals } from "./createIntervals/CreateIntervals"
+import { useSprintStore } from "@/store/sprintStore"
 
 interface PropsCreateSprint {
     closeDialog: (boolean: boolean) => void,
-    onSubmit: (data: ResCreateSprint) => void
+    onSubmit: (data: ResCreateSprint) => void,
+    sprintToEdit?: Sprint | null
 }
 
-export const CreateSprint = ({ closeDialog, onSubmit }: PropsCreateSprint) => {
+export const CreateSprint = ({ closeDialog, onSubmit, sprintToEdit }: PropsCreateSprint) => {
+    const { sprintToEdit: sprintFromStore, clearSprintToEdit } = useSprintStore()
+    const editingSprint = sprintToEdit || sprintFromStore
+    const isEditMode = !!editingSprint
 
-    const [time, setTime] = useState<Date | undefined>(undefined)
+    const [time, setTime] = useState<Date | undefined>(editingSprint ? secondsToDate(editingSprint.time) : undefined)
     const today = new Date()
     today.setMinutes(today.getMinutes() - 40);
-    const [datetime, setDatetime] = useState<Date>(today)
-    const [distance, setDistance] = useState('')
-    const circuit = useRef<Circuit>()
-    const numberOfLaps = useRef('')
+    const [datetime, setDatetime] = useState<Date>(editingSprint ? new Date(editingSprint.date) : today)
+    const [distance, setDistance] = useState(editingSprint ? editingSprint.distance.toString() : '')
+    const circuit = useRef<Circuit | undefined>(editingSprint?.circuit)
+    const numberOfLaps = useRef(editingSprint?.numberOfLaps?.toString() || '')
     const setCircuitRef = (value: Circuit) => circuit.current = value
     const setLapsRef = (value: string) => numberOfLaps.current = value
-    const [takeBreak, setTakeBreak] = useState(false)
+    const [takeBreak, setTakeBreak] = useState(editingSprint?.takeBreak || false)
     const [pace, setPace] = useState('')
-    const [temperature, setTemperature] = useState('')
-    const [comment, setComment] = useState('')
-    const [effort, setEffort] = useState<number[]>([50])
-    const [haveEffort, setHaveEffort] = useState<boolean>(false)
-    const intervalsRef = useRef<BaseInterval[]>([])
+    const [temperature, setTemperature] = useState(editingSprint?.temperature?.toString() || '')
+    const [comment, setComment] = useState(editingSprint?.comment || '')
+    const [effort, setEffort] = useState<number[]>([editingSprint?.effort || 50])
+    const [haveEffort, setHaveEffort] = useState<boolean>(!!editingSprint?.effort)
+    const intervalsRef = useRef<BaseInterval[]>(editingSprint?.intervals || [])
 
     const { toast } = useToast()
     const getAccessToken = useGetAccessToken();
@@ -84,19 +89,31 @@ export const CreateSprint = ({ closeDialog, onSubmit }: PropsCreateSprint) => {
             intervals: intervalsRef.current
         }
         const token = await getAccessToken()
-        const res = await createSprint(newSprint, token)
-        if (!res.success) return toast({ title: 'Hubo un error creando el sprint', description: res.message, variant: 'destructive' })
-        toast({ title: 'Sprint creado con exito!' })
-        closeDialog(false)
-        onSubmit(res.data)
+
+        if (isEditMode && editingSprint) {
+            const res = await updateSprint(editingSprint.id.toString(), newSprint, token)
+            if (!res.success) return toast({ title: 'Hubo un error actualizando el sprint', description: res.message, variant: 'destructive' })
+            toast({ title: 'Sprint actualizado con exito!' })
+            closeDialog(false)
+            clearSprintToEdit()
+            // Para mantener compatibilidad, enviamos un objeto similar a ResCreateSprint
+            onSubmit({ newSprint: res.data })
+        } else {
+            const res = await createSprint(newSprint, token)
+            if (!res.success) return toast({ title: 'Hubo un error creando el sprint', description: res.message, variant: 'destructive' })
+            toast({ title: 'Sprint creado con exito!' })
+            closeDialog(false)
+            clearSprintToEdit()
+            onSubmit(res.data)
+        }
     }
 
     return (
         <DialogContent className="w-[310px] sm:w-[520px] md:w-[600px] lg:w-[800px]">
             <DialogHeader>
-                <DialogTitle>Crear Sprint</DialogTitle>
+                <DialogTitle>{isEditMode ? 'Editar Sprint' : 'Crear Sprint'}</DialogTitle>
                 <DialogDescription>
-                    Ingresa todos los datos de tu Sprint aquí. Clickea guardar cuando lo tengas!
+                    {isEditMode ? 'Modifica los datos de tu Sprint aquí. Clickea guardar cuando termines!' : 'Ingresa todos los datos de tu Sprint aquí. Clickea guardar cuando lo tengas!'}
                 </DialogDescription>
             </DialogHeader>
             <div className="grid gap-2 py-4 sm:max-h-[300px] lg:max-h-[500px] scroll-smooth px-16 scrollable-content">
@@ -117,6 +134,9 @@ export const CreateSprint = ({ closeDialog, onSubmit }: PropsCreateSprint) => {
                     onInputDistance={setDistance}
                     onSelectCircuit={setCircuitRef}
                     onInputLaps={setLapsRef}
+                    initialCircuit={editingSprint?.circuit}
+                    initialDistance={editingSprint?.distance.toString()}
+                    initialLaps={editingSprint?.numberOfLaps?.toString()}
                 />
 
                 <DialogHeader className="grid grid-cols-4 items-center mr-5 gap-4">
@@ -176,7 +196,11 @@ export const CreateSprint = ({ closeDialog, onSubmit }: PropsCreateSprint) => {
                     <>
                         <h2 className="self-center mt-8 font-bold">Intervalos</h2>
                         <div className="border-b border-border" />
-                        <CreateIntervals selectedCircuit={circuit.current} onChangeIntervals={onChangeIntervals} />
+                        <CreateIntervals
+                            selectedCircuit={circuit.current}
+                            onChangeIntervals={onChangeIntervals}
+                            initialIntervals={editingSprint?.intervals}
+                        />
                     </>
                 )}
 
@@ -196,7 +220,7 @@ export const CreateSprint = ({ closeDialog, onSubmit }: PropsCreateSprint) => {
                             Cancelar
                         </Button>
                     </DialogClose>
-                    <Button type="submit" onClick={handleSubmit}>Crear Sprint</Button>
+                    <Button type="submit" onClick={handleSubmit}>{isEditMode ? 'Actualizar Sprint' : 'Crear Sprint'}</Button>
                 </DialogFooter>
             </div>
 

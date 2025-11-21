@@ -25,3 +25,12 @@ export function formatTime(seconds: number): string {
 export function padZero(num: number) {
     return num < 10 ? '0' + num : num;
 }
+
+export function secondsToDate(seconds: number): Date {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    const date = new Date();
+    date.setHours(hours, minutes, secs, 0);
+    return date;
+}
